@@ -1,11 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-
-if (!url || !key) {
-  throw new Error('Defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.')
-}
+// Projeto "barber". A chave publicável é pública por natureza; as variáveis de ambiente
+// permitem apontar para outro projeto sem mudar o código.
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jwdrxueavpiwqjqtkokv.supabase.co'
+const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_nY5B4dpuktrItVZyMiGFlA_NQvtwVQu'
 
 // Só a chave pública: o banco protege tudo com RLS e funções que validam o acesso.
 export const supabase = createClient(url, key, { auth: { persistSession: false } })
