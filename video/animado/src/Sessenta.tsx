@@ -267,7 +267,8 @@ const Benefits = () => {
             const q = interpolate(local, [4 + k * 4, 16 + k * 4], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) })
             return (
               <span key={k} style={{ overflow: 'hidden', display: 'block' }}>
-                <span style={{ ...title, fontSize: k === 0 ? 96 : 150, display: 'block', color: k === 0 ? GOLD : WHITE, transform: `translateY(${(1 - q) * 100}%)` }}>{w}</span>
+                {/* tamanho se ajusta ao comprimento da palavra pra nunca passar da borda (largura útil ~940px) */}
+                <span style={{ ...title, fontSize: k === 0 ? 96 : Math.min(150, Math.floor(940 / (w.length * 0.78))), display: 'block', color: k === 0 ? GOLD : WHITE, transform: `translateY(${(1 - q) * 100}%)` }}>{w}</span>
               </span>
             )
           })}
