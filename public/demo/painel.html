@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EEEDEA;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#1A1917;-webkit-font-smoothing:antialiased}
+a{color:#8A6A00}a:hover{color:#5E4800}
+*{box-sizing:border-box}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#EEEDEA;padding:clamp(10px,2vw,28px);font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#1A1917">
+<div style="max-width:1320px;margin:0 auto;background:#FBFAF8;border-radius:28px;padding:clamp(16px,2.4vw,28px);box-shadow:0 1px 0 rgba(0,0,0,0.04),0 20px 50px -30px rgba(40,30,0,0.25)">
+
+  <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="assets/logo-mr-chavozo.jpg" alt="Mr Chavozo" style="width:44px;height:44px;border-radius:50%;object-fit:cover">
+      <div style="display:flex;flex-direction:column"><span style="font-weight:800;font-size:16px">Mr. Chavozo</span><span style="font-size:12px;color:#77736B">Painel da barbearia</span></div>
+    </div>
+    <sc-if value="{{ isWide }}" hint-placeholder-val="{{ true }}">
+    <nav style="display:flex;gap:4px;background:#F0EFEC;padding:5px;border-radius:999px;overflow-x:auto;max-width:100%">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+        <button onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</button>
+      </sc-for>
+    </nav>
+    </sc-if>
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="/mrchavozo" style="font-size:13px;font-weight:600;border:1px solid #E2E0DB;border-radius:999px;padding:10px 16px;color:#1A1917;background:#fff">Ver site</a>
+    </div>
+  </header>
+
+  <sc-if value="{{ tabHoje }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:18px">
+      <div><h1 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-0.01em">{{ greeting }}, Mr. Chavozo!</h1><p style="margin:4px 0 0;color:#77736B;font-size:14px">{{ todayLabel }}</p></div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <div style="display:flex;gap:4px;background:#F0EFEC;padding:4px;border-radius:999px">
+          <sc-for list="{{ barberFilter }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</button></sc-for>
+        </div>
+        <button onClick="{{ openReg }}" style="background:#F2C318;color:#1A1917;border:0;border-radius:999px;padding:11px 18px;font:800 13px 'Plus Jakarta Sans',sans-serif;cursor:pointer;white-space:nowrap;flex:none" style-hover="background:#E5B400">+ Registrar atendimento</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:16px">
+      <div style="background:#fff;border:1px solid #ECEAE5;border-radius:20px;padding:20px"><div style="font-size:13px;color:#77736B;font-weight:600">Agendados hoje</div><div style="font-size:34px;font-weight:800;margin-top:10px;letter-spacing:-0.02em">{{ k.total }}</div><div style="font-size:13px;color:#77736B;margin-top:2px">{{ k.pending }} ainda vêm</div></div>
+      <div style="background:#fff;border:1px solid #ECEAE5;border-radius:20px;padding:20px"><div style="font-size:13px;color:#77736B;font-weight:600">Concluídos</div><div style="font-size:34px;font-weight:800;margin-top:10px;letter-spacing:-0.02em;color:#2F7A3E">{{ k.done }}</div><div style="font-size:13px;color:#77736B;margin-top:2px">marcados no painel</div></div>
+      <div style="background:#fff;border:1px solid #ECEAE5;border-radius:20px;padding:20px"><div style="font-size:13px;color:#77736B;font-weight:600">Faltas</div><div style="font-size:34px;font-weight:800;margin-top:10px;letter-spacing:-0.02em;color:#C2410C">{{ k.noshow }}</div><div style="font-size:13px;color:#77736B;margin-top:2px">não apareceram</div></div>
+      <div style="background:#1A1917;color:#fff;border-radius:20px;padding:20px"><div style="font-size:13px;color:#B9B4A9;font-weight:600">Recebido no balcão</div><div style="font-size:34px;font-weight:800;margin-top:10px;letter-spacing:-0.02em;color:#F2C318">{{ k.revenue }}</div><div style="font-size:13px;color:#B9B4A9;margin-top:2px">previsto hoje: {{ k.expected }}</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px;margin-bottom:16px">
+      <sc-for list="{{ columns }}" as="c" hint-placeholder-count="3">
+        <section style="background:#fff;border:1px solid #ECEAE5;border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px">
+            <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:50%;background:#F6E7A8;color:#5E4800;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">{{ c.initials }}</div><div><div style="font-weight:700;font-size:15px">{{ c.name }}</div><div style="font-size:12px;color:#77736B">{{ c.hours }}</div></div></div>
+            <span style="font-size:12px;font-weight:700;color:#77736B;background:#F4F3F0;padding:5px 10px;border-radius:999px;white-space:nowrap;flex:none">{{ c.count }}</span>
+          </div>
+          <sc-if value="{{ c.off }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;text-align:center;color:#77736B;font-size:14px;background:#F7F6F3;border-radius:14px">Folga hoje</div></sc-if>
+          <sc-for list="{{ c.items }}" as="a" hint-placeholder-count="4">
+            <div style="{{ a.cardStyle }}">
+              <div style="display:flex;justify-content:space-between;gap:10px;align-items:start">
+                <div style="display:flex;gap:12px"><span style="font-weight:800;font-size:15px;min-width:44px">{{ a.time }}</span><div><div style="font-weight:700;font-size:14px">{{ a.client }}</div><div style="font-size:12px;color:#77736B;margin-top:2px">{{ a.serviceLabel }}</div></div></div>
+                <span style="{{ a.chipStyle }}">{{ a.statusLabel }}</span>
+              </div>
+              <sc-if value="{{ a.pending }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:8px;margin-top:12px">
+                  <button onClick="{{ a.done }}" style="flex:1;background:#1A1917;color:#fff;border:0;border-radius:999px;padding:10px;font:700 13px 'Plus Jakarta Sans',sans-serif;cursor:pointer" style-hover="background:#2F7A3E">Marcar concluído</button>
+                  <button onClick="{{ a.noshow }}" style="background:#fff;color:#C2410C;border:1px solid #F1D2C2;border-radius:999px;padding:10px 14px;font:700 13px 'Plus Jakarta Sans',sans-serif;cursor:pointer" style-hover="background:#FFF4EE">Faltou</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ a.closed }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:14px;align-items:center;margin-top:8px">
+                  <button onClick="{{ a.undo }}" style="background:none;border:0;padding:0;color:#77736B;font:600 12px 'Plus Jakarta Sans',sans-serif;cursor:pointer;text-decoration:underline">Desfazer</button>
+                  <sc-if value="{{ a.hasReturn }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;color:#2F7A3E;white-space:nowrap">Retorno: {{ a.returnLabel }}</span></sc-if>
+                  <sc-if value="{{ a.canRebook }}" hint-placeholder-val="{{ false }}"><button onClick="{{ a.rebook }}" style="background:none;border:0;padding:0;color:#8A6A00;font:700 12px 'Plus Jakarta Sans',sans-serif;cursor:pointer;white-space:nowrap">Marcar retorno →</button></sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </section>
+      </sc-for>
+    </div>
+
+    <section style="background:#fff;border:1px solid #ECEAE5;border-radius:22px;padding:22px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+        <div><h2 style="margin:0;font-size:18px;font-weight:800">Próximos agendamentos</h2><p style="margin:4px 0 0;font-size:13px;color:#77736B">Inclui os marcados direto no balcão</p></div>
+        <span style="font-size:12px;font-weight:700;color:#77736B;background:#F4F3F0;padding:5px 10px;border-radius:999px">{{ upcomingCount }}</span>
+      </div>
+      <sc-if value="{{ noUpcoming }}" hint-placeholder-val="{{ false }}"><p style="margin:12px 0 0;color:#77736B;font-size:14px">Nenhum agendamento pros próximos dias.</p></sc-if>
+      <sc-for list="{{ upcoming }}" as="u" hint-placeholder-count="3">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-top:1px solid #F0EFEC">
+          <div style="display:flex;gap:14px;align-items:center;min-width:0">
+            <div style="min-width:86px"><div style="font-weight:800;font-size:14px">{{ u.dateLabel }}</div><div style="font-size:13px;color:#77736B">{{ u.time }}</div></div>
+            <div style="min-width:0"><div style="font-weight:700;font-size:14px">{{ u.client }}</div><div style="font-size:12px;color:#77736B">{{ u.serviceLabel }} · {{ u.b }}</div></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <sc-if value="{{ u.isNew }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:#F6EBC0;color:#6B5200">Marcado no balcão</span></sc-if>
+            <button onClick="{{ u.cancel }}" style="background:none;border:1px solid #E2E0DB;border-radius:999px;padding:7px 12px;font:600 12px 'Plus Jakarta Sans',sans-serif;cursor:pointer;color:#55524B" style-hover="border-color:#C2410C;color:#C2410C">Cancelar</button>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+
+    </sc-if>
+
+  <sc-if value="{{ tabFolgas }}" hint-placeholder-val="{{ false }}">
+    <h1 style="margin:0 0 4px;font-size:26px;font-weight:800">Folgas e bloqueios</h1>
+    <p style="margin:0 0 20px;color:#77736B;font-size:14px">Horário bloqueado some da agenda do site na hora.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px">
+      <section style="background:#fff;border:1px solid #ECEAE5;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px;align-self:start">
+        <h2 style="margin:0;font-size:17px;font-weight:800">Novo bloqueio</h2>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B">Barbeiro
+          <select value="{{ f.barber }}" onChange="{{ setBarber }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif;background:#fff"><sc-for list="{{ barberOptions }}" as="bo" hint-placeholder-count="3"><option value="{{ bo.name }}">{{ bo.name }}</option></sc-for></select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B">Dia
+          <input type="date" value="{{ f.date }}" onChange="{{ setDate }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif">
+        </label>
+        <label style="display:flex;gap:10px;align-items:center;font-size:14px;font-weight:600;cursor:pointer"><input type="checkbox" checked="{{ f.allDay }}" onChange="{{ setAllDay }}" style="width:18px;height:18px;accent-color:#1A1917">Dia inteiro (folga)</label>
+        <sc-if value="{{ notAllDay }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B">De<input type="time" value="{{ f.from }}" onChange="{{ setFrom }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B">Até<input type="time" value="{{ f.to }}" onChange="{{ setTo }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif"></label>
+          </div>
+        </sc-if>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B">Motivo (opcional)
+          <input value="{{ f.reason }}" onChange="{{ setReason }}" placeholder="Ex: almoço, médico" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif">
+        </label>
+        <button onClick="{{ addBlock }}" style="background:#1A1917;color:#fff;border:0;border-radius:999px;padding:14px;font:700 14px 'Plus Jakarta Sans',sans-serif;cursor:pointer" style-hover="background:#33312C">Bloquear</button>
+      </section>
+      <section style="background:#fff;border:1px solid #ECEAE5;border-radius:22px;padding:22px">
+        <h2 style="margin:0 0 14px;font-size:17px;font-weight:800">Próximos bloqueios</h2>
+        <sc-for list="{{ blocksView }}" as="b" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-top:1px solid #F0EFEC">
+            <div style="display:flex;gap:12px;align-items:center"><div style="width:36px;height:36px;border-radius:50%;background:#F6E7A8;color:#5E4800;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px">{{ b.initials }}</div><div><div style="font-weight:700;font-size:14px">{{ b.barber }} · {{ b.dateLabel }}</div><div style="font-size:13px;color:#77736B">{{ b.range }}{{ b.reasonLabel }}</div></div></div>
+          </div>
+        </sc-for>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ tabServicos }}" hint-placeholder-val="{{ false }}">
+    <h1 style="margin:0 0 4px;font-size:26px;font-weight:800">Serviços e barbeiros</h1>
+    <p style="margin:0 0 20px;color:#77736B;font-size:14px">O que muda aqui aparece no site na hora.</p>
+    <section style="background:#fff;border:1px solid #ECEAE5;border-radius:22px;padding:8px 22px 22px">
+      <div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) 44px;gap:12px;padding:14px 0;font-size:12px;font-weight:700;color:#77736B;text-transform:uppercase;letter-spacing:0.06em"><span>Serviço</span><span>Preço (R$)</span><span>Duração (min)</span><span></span></div>
+      <sc-for list="{{ servicesView }}" as="s" hint-placeholder-count="5">
+        <div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) 44px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #F0EFEC">
+          <input value="{{ s.name }}" onChange="{{ s.setName }}" style="min-width:0;padding:11px 12px;border:1px solid #ECEAE5;border-radius:12px;font:600 15px 'Plus Jakarta Sans',sans-serif">
+          <input value="{{ s.price }}" onChange="{{ s.setPrice }}" inputMode="numeric" style="min-width:0;padding:11px 12px;border:1px solid #ECEAE5;border-radius:12px;font:600 15px 'Plus Jakarta Sans',sans-serif">
+          <input value="{{ s.dur }}" onChange="{{ s.setDur }}" inputMode="numeric" style="min-width:0;padding:11px 12px;border:1px solid #ECEAE5;border-radius:12px;font:600 15px 'Plus Jakarta Sans',sans-serif">
+          <button onClick="{{ s.remove }}" aria-label="Remover" style="width:40px;height:40px;border-radius:50%;border:1px solid #ECEAE5;background:#fff;cursor:pointer;color:#77736B;font-size:18px" style-hover="color:#C2410C;border-color:#F1D2C2">×</button>
+        </div>
+      </sc-for>
+      <button onClick="{{ addService }}" style="margin-top:14px;background:#F4F3F0;border:1px dashed #D6D3CC;border-radius:14px;padding:14px;width:100%;font:700 14px 'Plus Jakarta Sans',sans-serif;cursor:pointer;color:#1A1917" style-hover="background:#EEEDEA">+ Adicionar serviço</button>
+    </section>
+    <section style="background:#fff;border:1px solid #ECEAE5;border-radius:22px;padding:20px 22px 22px;margin-top:16px">
+      <h2 style="margin:0 0 4px;font-size:18px;font-weight:800">Barbeiros</h2>
+      <p style="margin:0 0 12px;font-size:13px;color:#77736B">Desativado some do site e da agenda. Trocar o nome mantém os horários marcados.</p>
+      <sc-for list="{{ barbersEdit }}" as="b" hint-placeholder-count="3">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #F0EFEC">
+          <input value="{{ b.full }}" onChange="{{ b.setName }}" placeholder="Nome do barbeiro" style="flex:1 1 220px;min-width:0;padding:11px 12px;border:1px solid #ECEAE5;border-radius:12px;font:600 15px 'Plus Jakarta Sans',sans-serif">
+          <input value="{{ b.hours }}" onChange="{{ b.setHours }}" placeholder="9h às 19h" style="flex:1 1 120px;min-width:0;padding:11px 12px;border:1px solid #ECEAE5;border-radius:12px;font:600 15px 'Plus Jakarta Sans',sans-serif">
+          <button onClick="{{ b.toggle }}" style="{{ b.toggleStyle }}">{{ b.toggleLabel }}</button>
+        </div>
+      </sc-for>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ tabSemana }}" hint-placeholder-val="{{ false }}">
+    <h1 style="margin:0 0 4px;font-size:26px;font-weight:800">Relatório</h1>
+    <p style="margin:0 0 20px;color:#77736B;font-size:14px">Atendidos, faltas e comparecimento.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px">
+      <section style="background:#fff;border:1px solid #ECEAE5;border-radius:22px;padding:22px">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;margin-bottom:18px">
+          <div><h2 style="margin:0;font-size:18px;font-weight:800">{{ periodTitle }}</h2><p style="margin:4px 0 0;font-size:13px;color:#77736B">{{ periodSub }}</p></div>
+          <div style="display:flex;gap:4px;background:#F0EFEC;padding:4px;border-radius:999px">
+            <sc-for list="{{ periodTabs }}" as="p" hint-placeholder-count="2"><button onClick="{{ p.pick }}" style="{{ p.style }}">{{ p.label }}</button></sc-for>
+          </div>
+          <select value="{{ monthKey }}" onChange="{{ pickMonth }}" style="padding:7px 12px;border:1px solid #E2E0DB;border-radius:999px;font:600 12px 'Plus Jakarta Sans',sans-serif;background:#fff;color:#1A1917;cursor:pointer">
+            <sc-for list="{{ monthOptions }}" as="m" hint-placeholder-count="1"><option value="{{ m.key }}">{{ m.label }}</option></sc-for>
+          </select>
+          <div style="display:flex;gap:14px;font-size:12px;color:#77736B;font-weight:600"><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#1A1917"></span>Atendidos</span><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#F08A5D"></span>Faltas</span></div>
+        </div>
+        <div style="display:flex;gap:28px;flex-wrap:wrap;margin-bottom:18px">
+          <div><div style="font-size:13px;color:#77736B">Atendidos</div><div style="font-size:28px;font-weight:800">{{ w.done }}</div></div>
+          <div><div style="font-size:13px;color:#77736B">Faltas</div><div style="font-size:28px;font-weight:800;color:#C2410C">{{ w.noshow }}</div></div>
+          <div><div style="font-size:13px;color:#77736B">Recebido</div><div style="font-size:28px;font-weight:800">{{ w.revenue }}</div></div>
+        </div>
+        <div style="{{ barGrid }}">
+          <sc-for list="{{ bars }}" as="d" hint-placeholder-count="7">
+            <div style="display:flex;flex-direction:column;justify-content:end;align-items:stretch;height:100%;gap:3px">
+              <span style="font-size:11px;font-weight:700;text-align:center;color:#77736B">{{ d.done }}</span>
+              <div style="{{ d.noshowStyle }}"></div>
+              <div style="{{ d.doneStyle }}"></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="{{ labelGrid }}">
+          <sc-for list="{{ bars }}" as="d" hint-placeholder-count="7"><span style="{{ d.labelStyle }}">{{ d.label }}</span></sc-for>
+        </div>
+      </section>
+      <section style="background:#fff;border:1px solid #ECEAE5;border-radius:22px;padding:22px;display:flex;flex-direction:column">
+        <h2 style="margin:0;font-size:18px;font-weight:800">Comparecimento</h2>
+        <p style="margin:4px 0 18px;font-size:13px;color:#77736B">{{ rateSub }}</p>
+        <div style="font-size:48px;font-weight:800;letter-spacing:-0.02em">{{ w.rate }}</div>
+        <p style="margin:0 0 18px;font-size:13px;color:#77736B">dos agendados apareceram</p>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-top:auto">
+          <sc-for list="{{ rates }}" as="r" hint-placeholder-count="3">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:6px"><span>{{ r.name }}</span><span>{{ r.label }}</span></div>
+              <div style="height:10px;background:#F0EFEC;border-radius:999px;overflow:hidden"><div style="{{ r.bar }}"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+<sc-if value="{{ regOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeReg }}" style="position:fixed;inset:0;z-index:50;background:rgba(26,25,23,0.45);display:flex;align-items:center;justify-content:center;padding:12px">
+      <div onClick="{{ stop }}" style="width:100%;max-width:540px;max-height:calc(100dvh - 24px);overflow:auto;background:#fff;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 30px 80px -20px rgba(0,0,0,0.35)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <h2 style="margin:0;font-size:20px;font-weight:800">Registrar atendimento</h2>
+          <button onClick="{{ closeReg }}" aria-label="Fechar" style="width:36px;height:36px;border-radius:50%;border:1px solid #ECEAE5;background:#fff;cursor:pointer;font-size:18px;color:#55524B">×</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#F0EFEC;padding:5px;border-radius:16px">
+          <button onClick="{{ modeWalkin }}" style="{{ walkinStyle }}"><span style="font-weight:800;font-size:14px">Atendido agora</span><span style="font-size:12px;opacity:.75">Chegou sem horário</span></button>
+          <button onClick="{{ modeSchedule }}" style="{{ scheduleStyle }}"><span style="font-weight:800;font-size:14px">Agendar</span><span style="font-size:12px;opacity:.75">Marcar pra outro dia</span></button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B;min-width:0">Cliente<input value="{{ r.client }}" onChange="{{ setClient }}" placeholder="Nome do cliente" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif;background:#fff;min-width:0;width:100%"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B;min-width:0">WhatsApp (opcional)<input value="{{ r.phone }}" onChange="{{ setPhone }}" inputMode="tel" placeholder="(11) 90000-0000" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif;background:#fff;min-width:0;width:100%"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B;min-width:0">Barbeiro<select value="{{ r.barber }}" onChange="{{ setRBarber }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif;background:#fff;min-width:0;width:100%"><sc-for list="{{ barberOptions }}" as="bo" hint-placeholder-count="3"><option value="{{ bo.name }}">{{ bo.name }}</option></sc-for></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B;min-width:0">Serviço<select value="{{ r.sid }}" onChange="{{ setSid }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif;background:#fff;min-width:0;width:100%"><sc-for list="{{ serviceOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></label>
+        </div>
+        <sc-if value="{{ isWalkin }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#F7F6F3;border-radius:14px;padding:14px;font-size:13px;color:#55524B">Entra como <strong style="color:#2F7A3E">concluído</strong> hoje às {{ nowLabel }}. O valor soma no recebido do dia.</div>
+          <label style="display:flex;gap:10px;align-items:center;font-size:14px;font-weight:700;cursor:pointer"><input type="checkbox" checked="{{ r.retorno }}" onChange="{{ setRetorno }}" style="width:18px;height:18px;accent-color:#1A1917">Cliente já quer marcar o próximo</label>
+          <sc-if value="{{ r.retorno }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B;min-width:0">Dia do retorno<input type="date" value="{{ r.rDate }}" onChange="{{ setRDate }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif;background:#fff;min-width:0;width:100%"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B;min-width:0">Horário<input type="time" step="1800" value="{{ r.rTime }}" onChange="{{ setRTime }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif;background:#fff;min-width:0;width:100%"></label>
+            </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ isSchedule }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B;min-width:0">Dia<input type="date" value="{{ r.date }}" onChange="{{ setRDay }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif;background:#fff;min-width:0;width:100%"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#55524B;min-width:0">Horário<input type="time" step="1800" value="{{ r.time }}" onChange="{{ setRTimeMain }}" style="padding:12px;border:1px solid #E2E0DB;border-radius:12px;font:500 15px 'Plus Jakarta Sans',sans-serif;background:#fff;min-width:0;width:100%"></label>
+          </div>
+          <div style="font-size:13px;color:#77736B">O horário sai da agenda do site na hora.</div>
+        </sc-if>
+        <sc-if value="{{ regError }}" hint-placeholder-val="{{ false }}"><div style="background:#FDE8DE;color:#B23A0A;border-radius:12px;padding:12px 14px;font-size:13px;font-weight:600">{{ regError }}</div></sc-if>
+        <button onClick="{{ submitReg }}" style="background:#1A1917;color:#fff;border:0;border-radius:999px;padding:15px;font:800 15px 'Plus Jakarta Sans',sans-serif;cursor:pointer" style-hover="background:#33312C">{{ submitLabel }}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:60;background:#1A1917;color:#fff;padding:14px 20px;border-radius:999px;font-size:14px;font-weight:700;box-shadow:0 12px 30px -10px rgba(0,0,0,0.4);white-space:nowrap">{{ toast }}</div>
+  </sc-if>
+<sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <div style="height:84px"></div>
+    <nav style="position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid #ECEAE5;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 6px calc(8px + env(safe-area-inset-bottom))">
+      <button onClick="{{ mt.hoje.pick }}" style="{{ mt.hoje.style }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg><span style="font-size:11px;font-weight:700">Hoje</span></button>
+      <button onClick="{{ mt.folgas.pick }}" style="{{ mt.folgas.style }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M6 6l12 12"></path></svg><span style="font-size:11px;font-weight:700">Folgas</span></button>
+      <button onClick="{{ mt.servicos.pick }}" style="{{ mt.servicos.style }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg><span style="font-size:11px;font-weight:700">Serviços</span></button>
+      <button onClick="{{ mt.semana.pick }}" style="{{ mt.semana.style }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11M12 20V5M19 20v-6"></path></svg><span style="font-size:11px;font-weight:700">Relatório</span></button>
+    </nav>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    const svc = [
+      { id: 1, name: 'Corte', price: 40, dur: 40 }, { id: 2, name: 'Barba', price: 30, dur: 30 },
+      { id: 3, name: 'Corte + barba', price: 60, dur: 70 }, { id: 4, name: 'Pezinho', price: 15, dur: 15 }, { id: 5, name: 'Sobrancelha', price: 15, dur: 10 }];
+    const today = new Date(); const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    this.todayIso = iso(today);
+    const A = (id, b, time, client, sid, status, date) => ({ id, b, time, client, sid, status, date: date || this.todayIso });
+    const plus = n => { const d = new Date(today); d.setDate(d.getDate() + n); return iso(d); };
+    this.state = {
+      tab: 'hoje', filter: 'all', nextBarber: 4,
+      barbers: [{ id: 1, full: 'Rafael Chavozo', name: 'Rafael', hours: '9h às 19h', active: true }, { id: 2, full: 'Diego Matos', name: 'Diego', hours: '10h às 20h', active: true }, { id: 3, full: 'Lucas Ferreira', name: 'Lucas', hours: '9h às 18h', active: true }], services: svc, nextSvc: 6,
+      appts: [
+        A(1,'Rafael','09:00','Bruno Santos',1,'done'), A(2,'Rafael','09:30','Matheus Alves',3,'done'), A(3,'Rafael','10:40','Caio Nunes',2,'noshow'),
+        A(4,'Rafael','11:30','Pedro Lima',1,'pending'), A(5,'Rafael','14:00','Vitor Rocha',3,'pending'), A(6,'Rafael','16:00','João Paulo',1,'pending'),
+        A(7,'Diego','10:00','Kauã Ribeiro',2,'done'), A(8,'Diego','11:00','Felipe Costa',3,'pending'), A(9,'Diego','13:30','André Souza',1,'pending'),
+        A(10,'Diego','15:00','Gustavo Reis',4,'pending'), A(11,'Diego','18:30','Leandro M.',3,'pending'),
+        A(12,'Lucas','09:00','Enzo (infantil)',1,'done'), A(13,'Lucas','10:00','Rodrigo F.',1,'pending'), A(14,'Lucas','12:00','Samuel Dias',5,'pending'),
+        A(15,'Rafael','10:00','Bruno Santos',1,'pending',plus(1)), A(16,'Diego','17:30','Kauã Ribeiro',3,'pending',plus(2)), A(17,'Lucas','09:30','Thiago L.',1,'pending',plus(3))],
+      nextAppt: 18, reg: null, regError: '', toast: '',
+      blocks: [
+        { id: 1, barber: 'Rafael', date: plus(0), allDay: false, from: '12:00', to: '13:00', reason: 'Almoço' },
+        { id: 2, barber: 'Diego', date: plus(2), allDay: true, reason: 'Folga' },
+        { id: 3, barber: 'Lucas', date: plus(4), allDay: false, from: '15:00', to: '17:00', reason: 'Médico' }],
+      nextBlock: 4,
+      form: { barber: 'Rafael', date: plus(1), allDay: false, from: '12:00', to: '13:00', reason: '' }
+    };
+  }
+  newReg(patch) {
+    const d = new Date(); d.setDate(d.getDate() + 14);
+    const iso = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+    const t = new Date(); t.setDate(t.getDate() + 1);
+    this.setState({ reg: { mode: 'walkin', client: '', phone: '', barber: 'Rafael', sid: 1, retorno: false, rDate: iso(d), rTime: '10:00', date: iso(t), time: '10:00', ...patch }, regError: '' });
+  }
+  nowHM() { const n = new Date(); return String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0'); }
+  submitReg() {
+    const s = this.state, r = s.reg, busy = (b, date, time) => s.appts.some(a => a.b === b && a.date === date && a.time === time && a.status !== 'noshow');
+    if (r.client.trim().length < 2) return this.setState({ regError: 'Coloca o nome do cliente.' });
+    const add = [];
+    let id = s.nextAppt;
+    if (r.mode === 'walkin') {
+      add.push({ id: id++, b: r.barber, time: this.nowHM(), client: r.client.trim(), sid: +r.sid, status: 'done', date: this.todayIso, isNew: true });
+      if (r.retorno) {
+        if (!r.rDate || !r.rTime) return this.setState({ regError: 'Escolhe o dia e o horário do retorno.' });
+        if (busy(r.barber, r.rDate, r.rTime)) return this.setState({ regError: r.barber + ' já tem cliente nesse horário do retorno.' });
+        add.push({ id: id++, b: r.barber, time: r.rTime, client: r.client.trim(), sid: +r.sid, status: 'pending', date: r.rDate, isNew: true });
+      }
+    } else {
+      if (!r.date || !r.time) return this.setState({ regError: 'Escolhe o dia e o horário.' });
+      if (busy(r.barber, r.date, r.time)) return this.setState({ regError: r.barber + ' já tem cliente nesse horário.' });
+      add.push({ id: id++, b: r.barber, time: r.time, client: r.client.trim(), sid: +r.sid, status: 'pending', date: r.date, isNew: true });
+    }
+    const msg = r.mode === 'walkin' ? (r.retorno ? 'Atendimento registrado e retorno marcado' : 'Atendimento registrado') : 'Agendamento registrado';
+    this.setState({ appts: [...s.appts, ...add], nextAppt: id, reg: null, toast: msg });
+    clearTimeout(this.tt); this.tt = setTimeout(() => this.setState({ toast: '' }), 2600);
+  }
+  componentDidMount() { this.onR = () => this.setState({ w: window.innerWidth }); window.addEventListener('resize', this.onR); this.onR(); }
+  componentWillUnmount() { clearTimeout(this.tt); window.removeEventListener('resize', this.onR); }
+  renderVals() {
+    const s = this.state, brl = n => 'R$ ' + n.toLocaleString('pt-BR');
+    const svc = id => s.services.find(x => x.id === id) || { name: '—', price: 0, dur: 0 };
+    const upd = (id, status) => this.setState(st => ({ appts: st.appts.map(a => a.id === id ? { ...a, status } : a) }));
+    const pill = on => ({ border: 0, borderRadius: 999, padding: '9px 16px', font: "600 13px 'Plus Jakarta Sans',sans-serif", cursor: 'pointer', whiteSpace: 'nowrap', background: on ? '#1A1917' : 'transparent', color: on ? '#fff' : '#55524B' });
+    const chip = st => ({ fontSize: 11, fontWeight: 700, padding: '4px 9px', borderRadius: 999, whiteSpace: 'nowrap', justifySelf: 'start',
+      background: st === 'done' ? '#E3F2E6' : st === 'noshow' ? '#FDE8DE' : '#F6EBC0', color: st === 'done' ? '#2F7A3E' : st === 'noshow' ? '#B23A0A' : '#6B5200' });
+    const lbl = { done: 'Concluído', noshow: 'Faltou', pending: 'Agendado' };
+    const ini = f => f.trim().split(/\s+/).map(w => w[0] || '').slice(0, 2).join('').toUpperCase();
+    const barbers = s.barbers.filter(b => b.active).map(b => ({ ...b, initials: ini(b.full) }));
+    const vis = s.filter === 'all' ? barbers : barbers.filter(b => b.name === s.filter);
+    const columns = vis.map(b => { const fmtD = iso => { const [y, m, d] = iso.split('-'); return ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][new Date(+y, +m - 1, +d).getDay()] + ' ' + d + '/' + m; };
+      const items = s.appts.filter(a => a.b === b.name && a.date === this.todayIso).sort((x, y) => x.time.localeCompare(y.time));
+      return { name: b.full, initials: b.initials, hours: b.hours, off: items.length === 0, count: items.length + ' horários',
+        items: items.map(a => { const sv = svc(a.sid); return { time: a.time, client: a.client, serviceLabel: sv.name + ' · ' + brl(sv.price),
+          statusLabel: lbl[a.status], chipStyle: chip(a.status), pending: a.status === 'pending', closed: a.status !== 'pending', isDone: a.status === 'done', ...(ret => ({ hasReturn: a.status === 'done' && !!ret, canRebook: a.status === 'done' && !ret, returnLabel: ret ? fmtD(ret.date) + ' ' + ret.time : '' }))(s.appts.find(x => x.client === a.client && x.date > this.todayIso && x.status === 'pending')),
+          rebook: () => this.newReg({ mode: 'schedule', client: a.client, barber: a.b, sid: a.sid }),
+          cardStyle: { border: '1px solid #ECEAE5', borderRadius: 16, padding: 14, background: a.status === 'pending' ? '#fff' : '#FAF9F7', opacity: a.status === 'noshow' ? 0.75 : 1 },
+          done: () => upd(a.id, 'done'), noshow: () => upd(a.id, 'noshow'), undo: () => upd(a.id, 'pending') }; }) }; });
+    const all = s.appts.filter(a => a.date === this.todayIso), done = all.filter(a => a.status === 'done'), ns = all.filter(a => a.status === 'noshow');
+    const sum = arr => arr.reduce((n, a) => n + svc(a.sid).price, 0);
+    const base = [{ l: 'Seg', d: 18, n: 1 }, { l: 'Ter', d: 22, n: 2 }, { l: 'Qua', d: 19, n: 1 }, { l: 'Qui', d: 24, n: 3 }, { l: 'Sex', d: 31, n: 2 }, { l: 'Sáb', d: 36, n: 4 }];
+    const wdays = [...base, { l: 'Hoje', d: done.length, n: ns.length, today: true }];
+    const wDone0 = wdays.reduce((n, d) => n + d.d, 0), wNs0 = wdays.reduce((n, d) => n + d.n, 0);
+    const isMonth = s.period === 'mes';
+    const MN = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+    const nowD = new Date(), curKey = nowD.getFullYear() + '-' + String(nowD.getMonth() + 1).padStart(2, '0');
+    const monthOptions = []; for (let d = new Date(2026, 9, 1); d <= nowD; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) monthOptions.push({ key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'), label: MN[d.getMonth()][0].toUpperCase() + MN[d.getMonth()].slice(1) + ' ' + d.getFullYear() });
+    if (!monthOptions.length) monthOptions.push({ key: curKey, label: MN[nowD.getMonth()] + ' ' + nowD.getFullYear() });
+    monthOptions.reverse();
+    const mKey = s.month && monthOptions.some(o => o.key === s.month) ? s.month : curKey;
+    const mLabel = (monthOptions.find(o => o.key === mKey) || monthOptions[0]).label;
+    const seed = +mKey.replace('-', '');
+    const pastMonth = mKey !== curKey ? [1, 2, 3, 4].map(i => ({ l: 'Sem ' + i, d: 120 + (seed * (i + 3)) % 35, n: 6 + (seed * i) % 7 })) : null;
+    const src = isMonth && pastMonth ? pastMonth : isMonth ? [{ l: 'Sem 1', d: 128, n: 11 }, { l: 'Sem 2', d: 141, n: 9 }, { l: 'Sem 3', d: 136, n: 12 }, { l: 'Sem 4', d: 149, n: 10 }, { l: 'Esta sem.', d: wDone0, n: wNs0, today: true }] : wdays;
+    const max = Math.max(...src.map(d => d.d + d.n)) * 1.1;
+    const bars = src.map(d => ({ label: d.l, done: d.d,
+      doneStyle: { height: (d.d / max * 140) + 'px', background: d.today ? '#F2C318' : '#1A1917', borderRadius: 8, minHeight: 4 },
+      noshowStyle: { height: (d.n / max * 140) + 'px', background: '#F08A5D', borderRadius: 6, minHeight: d.n ? 4 : 0 },
+      labelStyle: { fontSize: 12, textAlign: 'center', fontWeight: d.today ? 800 : 500, color: d.today ? '#1A1917' : '#77736B' } }));
+    const wDone = src.reduce((n, d) => n + d.d, 0), wNs = src.reduce((n, d) => n + d.n, 0);
+    const cols = { display: 'grid', gridTemplateColumns: 'repeat(' + src.length + ',1fr)', gap: 10 };
+    const rateList = barbers.map((b, i) => [b.full, (isMonth ? [93, 92, 95, 90, 94] : [94, 91, 96, 92, 93])[i % 5]]);
+    const fm = s.form, setF = k => e => { const v = e.target.type === 'checkbox' ? e.target.checked : e.target.value; this.setState(st => ({ form: { ...st.form, [k]: v } })); };
+    const fmtDate = iso => { const [y, m, d] = iso.split('-'); const dt = new Date(+y, +m - 1, +d); return ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dt.getDay()] + ', ' + d + '/' + m; };
+    const setSvc = (id, k, num) => e => { const v = num ? e.target.value.replace(/\D/g, '') : e.target.value; this.setState(st => ({ services: st.services.map(x => x.id === id ? { ...x, [k]: num ? (v === '' ? '' : +v) : v } : x) })); };
+    const hist = [...done, ...ns].map(a => ({ ...a, when: 'Hoje ' + a.time })).concat([
+      { when: 'Sáb 18:30', client: 'Igor P.', sid: 3, b: 'Rafael', status: 'done' }, { when: 'Sáb 17:00', client: 'Thiago L.', sid: 1, b: 'Lucas', status: 'done' },
+      { when: 'Sáb 15:30', client: 'Marcos V.', sid: 1, b: 'Diego', status: 'noshow' }, { when: 'Sex 19:00', client: 'Daniel C.', sid: 2, b: 'Diego', status: 'done' }]);
+    const today = new Date();
+    const r = s.reg || {};
+    const modeBtn = on => ({ border: 0, borderRadius: 12, padding: '12px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, font: 'inherit', textAlign: 'left', background: on ? '#1A1917' : 'transparent', color: on ? '#fff' : '#1A1917' });
+    const setR = (k, num) => e => { const v = e.target.type === 'checkbox' ? e.target.checked : e.target.value; this.setState(st => ({ reg: { ...st.reg, [k]: num ? +v : v }, regError: '' })); };
+    const upcomingList = s.appts.filter(a => a.date > this.todayIso && a.status === 'pending').sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time));
+    return {
+      greeting: (h => h >= 6 && h < 13 ? 'Bom dia' : h >= 13 && h < 18 ? 'Boa tarde' : 'Boa noite')(today.getHours()),
+      regOpen: !!s.reg, r, isWalkin: r.mode === 'walkin', isSchedule: r.mode === 'schedule',
+      openReg: () => this.newReg({}), closeReg: () => this.setState({ reg: null }), stop: e => e.stopPropagation(),
+      modeWalkin: () => setR('mode')({ target: { value: 'walkin' } }), modeSchedule: () => setR('mode')({ target: { value: 'schedule' } }),
+      walkinStyle: modeBtn(r.mode === 'walkin'), scheduleStyle: modeBtn(r.mode === 'schedule'),
+      setClient: setR('client'), setPhone: setR('phone'), setRBarber: setR('barber'), setSid: setR('sid', true), setRetorno: setR('retorno'),
+      setRDate: setR('rDate'), setRTime: setR('rTime'), setRDay: setR('date'), setRTimeMain: setR('time'),
+      serviceOptions: s.services.map(x => ({ id: x.id, label: x.name + ' · ' + brl(x.price || 0) })),
+      nowLabel: this.nowHM(), regError: s.regError, toast: s.toast,
+      submitLabel: r.mode === 'walkin' ? (r.retorno ? 'Registrar e marcar retorno' : 'Registrar como concluído') : 'Agendar',
+      submitReg: () => this.submitReg(),
+      upcoming: upcomingList.map(a => ({ dateLabel: fmtDate(a.date), time: a.time, client: a.client, b: a.b, serviceLabel: svc(a.sid).name, isNew: !!a.isNew,
+        cancel: () => this.setState(st => ({ appts: st.appts.filter(x => x.id !== a.id) })) })),
+      upcomingCount: upcomingList.length + ' marcados', noUpcoming: upcomingList.length === 0,
+      barberOptions: barbers,
+      barbersEdit: s.barbers.map(b => ({ ...b,
+        setName: e => { const full = e.target.value, name = full.trim().split(/\s+/)[0] || full; this.setState(st => ({
+          barbers: st.barbers.map(x => x.id === b.id ? { ...x, full, name } : x),
+          appts: st.appts.map(a => a.b === b.name ? { ...a, b: name } : a),
+          blocks: st.blocks.map(x => x.barber === b.name ? { ...x, barber: name } : x),
+          filter: st.filter === b.name ? name : st.filter })); },
+        setHours: e => { const v = e.target.value; this.setState(st => ({ barbers: st.barbers.map(x => x.id === b.id ? { ...x, hours: v } : x) })); },
+        toggle: () => this.setState(st => ({ barbers: st.barbers.map(x => x.id === b.id ? { ...x, active: !x.active } : x), filter: st.filter === b.name ? 'all' : st.filter })),
+        remove: () => this.setState(st => ({ barbers: st.barbers.filter(x => x.id !== b.id), filter: st.filter === b.name ? 'all' : st.filter })),
+        toggleLabel: b.active ? 'Ativo' : 'Desativado',
+        toggleStyle: { border: b.active ? '1px solid #CFE6D4' : '1px solid #E2E0DB', background: b.active ? '#E3F2E6' : '#F4F3F0', color: b.active ? '#2F7A3E' : '#77736B', borderRadius: 999, padding: '10px 14px', font: "700 13px 'Plus Jakarta Sans',sans-serif", cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 104 } })),
+      addBarber: () => this.setState(st => ({ barbers: [...st.barbers, { id: st.nextBarber, full: 'Novo barbeiro', name: 'Novo', hours: '9h às 18h', active: true }], nextBarber: st.nextBarber + 1 })),
+      isMobile: (s.w || 1200) < 760, isWide: (s.w || 1200) >= 760,
+      mt: Object.fromEntries(['hoje', 'folgas', 'servicos', 'semana'].map(k => [k, { pick: () => this.setState({ tab: k }), style: { background: 'none', border: 0, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '6px 0', minHeight: 52, font: 'inherit', color: s.tab === k ? '#1A1917' : '#9A968D' } }])),
+      tabs: [['hoje', 'Agenda de hoje'], ['folgas', 'Folgas e bloqueios'], ['servicos', 'Serviços'], ['semana', 'Relatório']].map(([k, l]) => ({ label: l, style: pill(s.tab === k), pick: () => this.setState({ tab: k }) })),
+      tabHoje: s.tab === 'hoje', tabFolgas: s.tab === 'folgas', tabServicos: s.tab === 'servicos', tabSemana: s.tab === 'semana',
+      todayLabel: today.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }),
+      barberFilter: [['all', 'Todos'], ...barbers.map(b => [b.name, b.name])].map(([k, l]) => ({ label: l, style: { ...pill(s.filter === k), padding: '7px 13px', fontSize: 12 }, pick: () => this.setState({ filter: k }) })),
+      k: { total: all.length, pending: all.length - done.length - ns.length, done: done.length, noshow: ns.length, revenue: brl(sum(done)), expected: brl(sum(all.filter(a => a.status !== 'noshow'))) },
+      columns, bars,
+      rateSub: isMonth ? mLabel + ', por barbeiro' : 'Últimos 7 dias, por barbeiro',
+      monthOptions, monthKey: mKey, pickMonth: e => this.setState({ month: e.target.value, period: 'mes' }),
+      periodTitle: isMonth ? 'Resumo de ' + mLabel.toLowerCase() : 'Resumo da semana', periodSub: isMonth ? 'Atendidos e faltas por semana' : 'Atendidos e faltas por dia',
+      periodTabs: [['semana', 'Semana'], ['mes', 'Mês']].map(([k, l]) => ({ label: l, style: { ...pill((s.period || 'semana') === k), padding: '6px 12px', fontSize: 12 }, pick: () => this.setState({ period: k }) })),
+      barGrid: { ...cols, alignItems: 'end', height: 180, borderBottom: '1px dashed #E2E0DB' }, labelGrid: { ...cols, marginTop: 8 },
+      w: { done: wDone, noshow: wNs, revenue: brl(wDone * 44), rate: Math.round(wDone / (wDone + wNs) * 100) + '%' },
+      rates: rateList.map(([n, r]) => ({ name: n, label: r + '%', bar: { width: r + '%', height: '100%', background: '#1A1917', borderRadius: 999 } })),
+      f: fm, notAllDay: !fm.allDay,
+      setBarber: setF('barber'), setDate: setF('date'), setAllDay: setF('allDay'), setFrom: setF('from'), setTo: setF('to'), setReason: setF('reason'),
+      addBlock: () => this.setState(st => ({ blocks: [...st.blocks, { ...st.form, id: st.nextBlock }], nextBlock: st.nextBlock + 1, form: { ...st.form, reason: '' } })),
+      blocksView: [...s.blocks].sort((a, b) => a.date.localeCompare(b.date)).map(b => ({ barber: b.barber, initials: b.barber.slice(0, 2).toUpperCase(), dateLabel: fmtDate(b.date),
+        range: b.allDay ? 'Dia inteiro' : b.from + ' às ' + b.to, reasonLabel: b.reason ? ' · ' + b.reason : '', remove: () => this.setState(st => ({ blocks: st.blocks.filter(x => x.id !== b.id) })) })),
+      servicesView: s.services.map(x => ({ ...x, setName: setSvc(x.id, 'name'), setPrice: setSvc(x.id, 'price', true), setDur: setSvc(x.id, 'dur', true), remove: () => this.setState(st => ({ services: st.services.filter(y => y.id !== x.id) })) })),
+      addService: () => this.setState(st => ({ services: [...st.services, { id: st.nextSvc, name: 'Novo serviço', price: 0, dur: 30 }], nextSvc: st.nextSvc + 1 })),
+      history: hist.map(h => ({ when: h.when, client: h.client, service: svc(h.sid).name, barber: h.b, price: brl(svc(h.sid).price), status: lbl[h.status], chipStyle: chip(h.status) }))
+    };
+  }
+}
+</script>
+</body>
+</html>
