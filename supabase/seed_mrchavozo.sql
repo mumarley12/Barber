@@ -4,8 +4,8 @@ with shop as (
   values ('mrchavozo', 'Mr. Chavozo', 'Rua das Palmeiras, 412 · Centro', 'São Paulo / SP',
           '(11) 98765-4321', '5511987654321', 'mrchavozo',
           array['Seg a Sáb, 9h às 20h', 'Dom, 9h às 14h'],
-          '/shops/mrchavozo/logo.jpg',
-          array['/shops/mrchavozo/hero-video-1.mp4', '/shops/mrchavozo/hero-video-2.mp4', '/shops/mrchavozo/hero-video-3.mp4'])
+          'https://cdn.jsdelivr.net/gh/mumarley12/Barber@1a23f0469fc740f2ea9104fdf73ee6bd48ed964b/public/shops/mrchavozo/logo.jpg',
+          array['https://cdn.jsdelivr.net/gh/mumarley12/Barber@1a23f0469fc740f2ea9104fdf73ee6bd48ed964b/public/shops/mrchavozo/hero-video-1.mp4', 'https://cdn.jsdelivr.net/gh/mumarley12/Barber@1a23f0469fc740f2ea9104fdf73ee6bd48ed964b/public/shops/mrchavozo/hero-video-2.mp4', 'https://cdn.jsdelivr.net/gh/mumarley12/Barber@1a23f0469fc740f2ea9104fdf73ee6bd48ed964b/public/shops/mrchavozo/hero-video-3.mp4'])
   returning id
 ),
 svc as (
