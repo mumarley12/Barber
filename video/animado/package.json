@@ -1,0 +1,14 @@
+{
+  "name": "video-agenda-por-barbeiro",
+  "private": true,
+  "scripts": {
+    "render": "remotion render src/index.ts Promo out/promo.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.532",
+    "@remotion/renderer": "^4.0.532",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.532"
+  }
+}

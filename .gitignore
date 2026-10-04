@@ -6,3 +6,6 @@ next-env.d.ts
 .env*.local
 .vercel
 video/*.mp4
+video/animado/node_modules
+video/animado/out
+video/animado/public/clips
