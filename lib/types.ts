@@ -11,6 +11,7 @@ export type Shop = {
   timezone: string
   logo_url: string | null
   hero_videos: string[]
+  gallery: { url: string; label: string }[]
   cancel_hours: number
   late_tolerance_min: number
   created_at: string

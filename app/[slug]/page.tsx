@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import type { Barber, Service, Shop } from '@/lib/types'
 import ShopSite from './ShopSite'
 
-const SHOP_COLUMNS = 'id, slug, name, address, city, phone, whatsapp, instagram, hours_text, timezone, logo_url, hero_videos, cancel_hours, late_tolerance_min, created_at'
+const SHOP_COLUMNS = 'id, slug, name, address, city, phone, whatsapp, instagram, hours_text, timezone, logo_url, hero_videos, gallery, cancel_hours, late_tolerance_min, created_at'
 
 async function load(slug: string) {
   const { data: shop } = await supabase.from('shops').select(SHOP_COLUMNS).eq('slug', slug).maybeSingle<Shop>()

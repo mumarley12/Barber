@@ -66,6 +66,8 @@ export default function ShopSite({ shop, barbers, services }: Props) {
   const openBooking = (barberId?: string) => { loadBusy(); setBooking({ barberId }) }
 
   const isMobile = w < 760
+  const gallery = shop.gallery?.length ? shop.gallery
+    : ['degradê', 'barba', 'navalhado', 'social', 'infantil', 'corte + barba'].map((label) => ({ url: '', label }))
 
   return (
     <div className="site">
@@ -152,8 +154,11 @@ export default function ShopSite({ shop, barbers, services }: Props) {
           <h3 className="s-h3">Cortes</h3>
           <div className="s-gallery-mask">
             <div className="s-gallery-track">
-              {[0, 1].flatMap((k) => ['degradê', 'barba', 'navalhado', 'social', 'infantil', 'corte + barba'].map((g) => (
-                <div key={k + g} className="s-gallery-tile"><span>{g}{shop.instagram ? ` · @${shop.instagram}` : ''}</span></div>
+              {[0, 1].flatMap((k) => gallery.map((g) => (
+                <div key={k + g.label} className="s-gallery-tile">
+                  {g.url && <img src={g.url} alt={k ? '' : g.label} loading="lazy" />}
+                  <span>{g.label}{shop.instagram ? ` · @${shop.instagram}` : ''}</span>
+                </div>
               )))}
             </div>
           </div>
