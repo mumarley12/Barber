@@ -452,10 +452,6 @@ function Settings({ shop, token, barbers, services, run }: {
         <h2 className="p-h2">Barbeiros</h2>
         <p className="p-sub" style={{ margin: '4px 0 12px' }}>Desativado some do site e da agenda. Os horários já marcados continuam no painel.</p>
         {barbers.map((b) => <BarberRow key={b.id} b={b} run={run} />)}
-        <button className="p-add" onClick={() => run('panel_save_barber', {
-          p_id: null, p_name: 'Novo barbeiro', p_specialty: '', p_active: false,
-          p_hours: [1, 2, 3, 4, 5, 6].map((d) => ({ weekday: d, start_time: '09:00', end_time: '18:00' })),
-        }, 'Barbeiro criado (desativado). Ajuste e ative.')}>+ Adicionar barbeiro</button>
       </section>
 
       <ShopInfo shop={shop} run={run} />
@@ -511,18 +507,17 @@ function ServiceRow({ s, run }: { s: Service; run: (fn: string, args: Record<str
 
 function BarberRow({ b, run }: { b: Barber; run: (fn: string, args: Record<string, unknown>, ok?: string) => Promise<boolean> }) {
   const [name, setName] = useState(b.name)
-  const [spec, setSpec] = useState(b.specialty || '')
   const [open, setOpen] = useState(false)
   const [hours, setHours] = useState<BarberHours[]>(b.hours)
-  useEffect(() => { setName(b.name); setSpec(b.specialty || ''); setHours(b.hours) }, [b])
+  useEffect(() => { setName(b.name); setHours(b.hours) }, [b])
 
   const save = (patch: { active?: boolean; hours?: BarberHours[] } = {}, ok = 'Salvo') =>
     run('panel_save_barber', {
-      p_id: b.id, p_name: name, p_specialty: spec, p_active: patch.active ?? b.active,
+      p_id: b.id, p_name: name, p_specialty: b.specialty || '', p_active: patch.active ?? b.active,
       p_hours: (patch.hours || b.hours).map((h) => ({ weekday: h.weekday, start_time: h.start_time.slice(0, 5), end_time: h.end_time.slice(0, 5) })),
     }, ok)
 
-  const blurSave = () => { if (name.trim() !== b.name || spec.trim() !== (b.specialty || '')) save() }
+  const blurSave = () => { if (name.trim() !== b.name) save() }
   const toggleDay = (d: number) => setHours(hours.some((h) => h.weekday === d)
     ? hours.filter((h) => h.weekday !== d)
     : [...hours, { weekday: d, start_time: '09:00', end_time: '18:00' }].sort((x, y) => x.weekday - y.weekday))
@@ -534,7 +529,6 @@ function BarberRow({ b, run }: { b: Barber; run: (fn: string, args: Record<strin
     <div className="p-barber">
       <div className="p-barber-row">
         <input value={name} onChange={(e) => setName(e.target.value)} onBlur={blurSave} placeholder="Nome do barbeiro" style={{ flex: '1 1 200px' }} />
-        <input value={spec} onChange={(e) => setSpec(e.target.value)} onBlur={blurSave} placeholder="Especialidade (aparece no site)" style={{ flex: '1 1 200px' }} />
         <button className="p-btn-line" onClick={() => setOpen(!open)} title="Dias e horários">{daysLabel}{hoursLabel ? `, ${hoursLabel}` : ''} ▾</button>
         <button className={'p-toggle' + (b.active ? ' on' : '')} onClick={() => save({ active: !b.active }, b.active ? 'Barbeiro desativado' : 'Barbeiro ativado')}>{b.active ? 'Ativo' : 'Desativado'}</button>
       </div>

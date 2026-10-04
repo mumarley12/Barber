@@ -108,7 +108,6 @@ export default function ShopSite({ shop, barbers, services }: Props) {
                 </div>
                 <div className="s-barber-body">
                   <h3>{b.name}</h3>
-                  {b.specialty && <p className="s-muted">{b.specialty}</p>}
                   <p className="s-barber-hours">{daysLabel}{hoursLabel && `, ${hoursLabel}`}</p>
                   <div className="s-barber-foot">
                     <span className="s-next">{nextFree(b)}</span>
