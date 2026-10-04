@@ -78,6 +78,7 @@ STYLES = {
     'Clean':       (84,  [('D', 'maj7'), ('B', 'm7'), ('G', 'maj7'), ('A', '6')], 'soft',        True,    2400),
     'Noite':       (74,  [('F', 'maj7'), ('E', 'm7'), ('D', 'm7'), ('C', 'maj7')], 'soft',       True,    1400),
     'Sessenta':    (112, [('A', 'm7'), ('F', 'maj7'), ('C', 'maj7'), ('G', '6')], 'four',        True,    2800),
+    'Sessenta2':   (96,  [('D', 'm7'), ('A#', 'maj7'), ('F', 'maj7'), ('C', '6')], 'half',       True,    2000),
     'AntesDepois': (104, [('C', 'm7'), ('G#', 'maj7'), ('D#', 'maj7'), ('A#', '6')], 'half',     False,   2600),
 }
 CHORD = {'m7': [0, 3, 7, 10], 'maj7': [0, 4, 7, 11], '6': [0, 4, 7, 9]}
