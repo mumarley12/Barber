@@ -146,11 +146,20 @@ img{display:block}
 .s-opt-main small{font-size:13px;color:#A8A196}
 .s-opt-next{font-size:12px;text-align:right}
 .s-opt .s-price{font-size:16px}
-.s-days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
-.s-day{flex:none;width:62px;padding:10px 0;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font:inherit;border:1px solid rgba(255,255,255,.1);background:#1B1A18;color:#F3EFE7}
-.s-day span{font-size:12px;text-transform:uppercase;letter-spacing:.06em}
-.s-day b{font-size:20px;font-weight:800}
+.s-week-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700;font-size:15px}
+.s-week-nav{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:#1B1A18;color:#F3EFE7;font-size:22px;line-height:1;cursor:pointer}
+.s-week-nav:disabled{opacity:.3;cursor:default}
+.s-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.s-day{min-width:0;padding:9px 0 7px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;font:inherit;border:1px solid rgba(255,255,255,.1);background:#1B1A18;color:#F3EFE7}
+.s-day:hover:not(:disabled){border-color:#E9B824}
+.s-day span{font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.s-day b{font-size:19px;font-weight:800}
+.s-day small{font-size:10px;min-height:12px;color:#8B857B}
+.s-day.off{background:transparent;color:#5A554D;cursor:not-allowed}
+.s-day.full b{color:#8B857B}
 .s-day.sel{border-color:#E9B824;background:#E9B824;color:#121110}
+.s-day.sel small,.s-day.sel b{color:#121110}
+@media (max-width:400px){.s-days{gap:4px}.s-day span{font-size:10px;letter-spacing:0}.s-day b{font-size:17px}}
 .s-empty{padding:28px 16px;text-align:center;color:#A8A196;background:#1B1A18;border-radius:14px;font-size:15px}
 .s-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}
 .s-slot{padding:12px 0;border-radius:12px;font:700 15px 'Albert Sans',sans-serif;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:#1B1A18;color:#F3EFE7}

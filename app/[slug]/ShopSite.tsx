@@ -293,6 +293,7 @@ function Booking({ shop, barbers, services, days, busy, now, initialBarber, next
   const [barberId, setBarberId] = useState<string | undefined>(initialBarber)
   const [serviceId, setServiceId] = useState<string>()
   const [day, setDay] = useState(0)
+  const [week, setWeek] = useState(0)
   const [slot, setSlot] = useState<{ label: string; start: Date }>()
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -315,6 +316,28 @@ function Booking({ shop, barbers, services, days, busy, now, initialBarber, next
   const isOff = barber && slots === null
   const allBusy = slots && slots.length > 0 && slots.every((s) => s.busy)
   const noneLeft = slots && slots.length === 0
+
+  // Situação de cada dia para o seletor: folga, lotado ou com horário livre
+  const dayState = (i: number) => {
+    if (!barber || !service) return 'free'
+    const sl = buildSlots(barber, days[i], tz, service.duration_min, busy, now)
+    if (sl === null) return 'off'
+    return sl.some((x) => !x.busy) ? 'free' : 'full'
+  }
+  const pickService = (id: string) => {
+    const svc = services.find((x) => x.id === id)
+    const first = barber && svc ? days.findIndex((d) => buildSlots(barber, d, tz, svc.duration_min, busy, now)?.some((x) => !x.busy)) : -1
+    const i = first < 0 ? 0 : first
+    setServiceId(id); setSlot(undefined); setDay(i); setWeek(Math.floor(i / 7)); setStep(3)
+  }
+  const weekDays = days.slice(week * 7, week * 7 + 7)
+  const weeks = Math.ceil(days.length / 7)
+  const monthOf = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'long' })
+  const weekTitle = (() => {
+    const a = monthOf(weekDays[0]), b = monthOf(weekDays[weekDays.length - 1])
+    const t = a === b ? a : `${a} / ${b}`
+    return t.charAt(0).toUpperCase() + t.slice(1)
+  })()
 
   const digits = phone.replace(/\D/g, '')
   const cant = !(name.trim().length > 1 && digits.length >= 10 && consent) || sending
@@ -378,7 +401,7 @@ function Booking({ shop, barbers, services, days, busy, now, initialBarber, next
             <>
               <h3 className="s-h3">Qual serviço?</h3>
               {services.map((s) => (
-                <button key={s.id} className={'s-opt' + (serviceId === s.id ? ' sel' : '')} onClick={() => { setServiceId(s.id); setSlot(undefined); setStep(3) }}>
+                <button key={s.id} className={'s-opt' + (serviceId === s.id ? ' sel' : '')} onClick={() => pickService(s.id)}>
                   <span className="s-opt-main"><b>{s.name}</b><small>{s.duration_min} min</small></span>
                   <span className="s-price">{brl(s.price_cents)}</span>
                 </button>
@@ -390,12 +413,22 @@ function Booking({ shop, barbers, services, days, busy, now, initialBarber, next
             <>
               <h3 className="s-h3" style={{ marginBottom: 2 }}>Escolha o horário</h3>
               <p className="s-muted" style={{ margin: '0 0 6px' }}>{barber.name} · {service.name} ({service.duration_min} min)</p>
+              <div className="s-week-head">
+                <button className="s-week-nav" aria-label="Semana anterior" disabled={week === 0} onClick={() => setWeek(week - 1)}>‹</button>
+                <span>{weekTitle}</span>
+                <button className="s-week-nav" aria-label="Próxima semana" disabled={week >= weeks - 1} onClick={() => setWeek(week + 1)}>›</button>
+              </div>
               <div className="s-days">
-                {days.map((d, i) => (
-                  <button key={d} className={'s-day' + (i === day ? ' sel' : '')} onClick={() => { setDay(i); setSlot(undefined) }}>
-                    <span>{i === 0 ? 'Hoje' : WEEKDAYS[weekdayOf(d)]}</span><b>{Number(d.slice(8))}</b>
-                  </button>
-                ))}
+                {weekDays.map((d, k) => {
+                  const i = week * 7 + k
+                  const st = dayState(i)
+                  return (
+                    <button key={d} disabled={st === 'off'} className={'s-day ' + st + (i === day ? ' sel' : '')} onClick={() => { setDay(i); setSlot(undefined) }}>
+                      <span>{i === 0 ? 'Hoje' : WEEKDAYS[weekdayOf(d)]}</span><b>{Number(d.slice(8))}</b>
+                      <small>{st === 'off' ? 'folga' : st === 'full' ? 'lotado' : ''}</small>
+                    </button>
+                  )
+                })}
               </div>
               {(isOff || allBusy || noneLeft) && (
                 <div className="s-empty">
