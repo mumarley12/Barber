@@ -445,3 +445,11 @@ img{display:block}
   .lp-phone{height:620px}
 }
 @media (max-width:420px){.p-kpi{padding:16px}.p-kpi b{font-size:28px}.p-kpi small{font-size:12px}}
+.p-confirm{max-width:400px;gap:12px}
+.p-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.p-btn-mid{padding:13px;font-size:14px;font-weight:700}
+.p-btn-danger{background:#C2410C;color:#fff;border:0;border-radius:999px;padding:13px;font:700 14px 'Plus Jakarta Sans',sans-serif;cursor:pointer}
+.p-btn-danger:hover:not(:disabled){background:#A3360A}
+.p-btn-danger:disabled{opacity:.6;cursor:default}
+.s-confirm{max-width:420px;padding:24px;gap:12px}
+.s-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}

@@ -17,6 +17,7 @@ export default function BookingPage({ params }: PageProps<'/agendamento/[token]'
   const [b, setB] = useState<Booking | null | undefined>(undefined)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [asking, setAsking] = useState(false)
 
   const load = async () => {
     const { data } = await supabase.rpc('get_booking', { p_token: token })
@@ -25,11 +26,11 @@ export default function BookingPage({ params }: PageProps<'/agendamento/[token]'
   useEffect(() => { load() }, [token]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const cancel = async () => {
-    if (!confirm('Cancelar este agendamento?')) return
     setBusy(true)
     setError('')
     const { error } = await supabase.rpc('cancel_booking', { p_token: token })
     setBusy(false)
+    setAsking(false)
     if (error) setError(errorMessage(error))
     else load()
   }
@@ -57,12 +58,24 @@ export default function BookingPage({ params }: PageProps<'/agendamento/[token]'
         {b.shop_address && <p className="s-muted">{b.shop_address}</p>}
         {error && <div className="s-error">{error}</div>}
         {b.status === 'pending' && (canCancel
-          ? <button className="s-btn-outline" style={{ padding: 14 }} disabled={busy} onClick={cancel}>{busy ? 'Cancelando…' : 'Cancelar agendamento'}</button>
+          ? <button className="s-btn-outline" style={{ padding: 14 }} disabled={busy} onClick={() => setAsking(true)}>Cancelar agendamento</button>
           : <p className="s-muted">Faltam menos de {b.cancel_hours} horas. Pra cancelar, fale com a barbearia.</p>)}
         {b.status === 'pending' && canCancel && <p className="s-muted">Pra remarcar: cancele este horário e escolha outro.</p>}
         <a className="s-btn" href={`/${b.shop_slug}`}>{b.status === 'pending' ? 'Escolher outro horário' : 'Marcar novo horário'}</a>
         {wa && <a href={wa} target="_blank" rel="noopener" style={{ textAlign: 'center', fontWeight: 700 }}>Falar com a barbearia no WhatsApp</a>}
       </div>
+      {asking && (
+        <div className="s-modal-bg" onClick={() => setAsking(false)}>
+          <div className="s-modal s-confirm" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-modal="true">
+            <h2 className="s-h3">Cancelar agendamento?</h2>
+            <p className="s-muted" style={{ fontSize: 15, lineHeight: 1.5 }}>{b.service_name} com {b.barber_name.split(' ')[0]}, {dayLabel(zoned(start, b.timezone).key)} às {timeLabel(start, b.timezone)}. O horário fica livre pra outra pessoa.</p>
+            <div className="s-confirm-actions">
+              <button className="s-btn-outline" style={{ padding: 14 }} onClick={() => setAsking(false)} autoFocus>Manter</button>
+              <button className="s-btn" disabled={busy} onClick={cancel}>{busy ? 'Cancelando…' : 'Sim, cancelar'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -20,6 +20,7 @@ export default function Panel({ token }: { token: string }) {
   const [filter, setFilter] = useState('all')
   const [reg, setReg] = useState<RegState | null>(null)
   const [toast, setToast] = useState('')
+  const [ask, setAsk] = useState<Ask | null>(null)
   const [monthKey, setMonthKey] = useState<string>()
   const [w, setW] = useState(1200)
 
@@ -110,12 +111,17 @@ export default function Panel({ token }: { token: string }) {
             shop={shop} tz={tz} today={today} barbers={activeBarbers} allBarbers={barbers} appointments={appointments}
             filter={filter} setFilter={setFilter} remind={remind}
             onStatus={(id, status) => run('panel_set_status', { p_id: id, p_status: status })}
-            onCancel={(a) => { if (confirm(`Cancelar o horário de ${a.client_name}?`)) run('panel_set_status', { p_id: a.id, p_status: 'cancelled' }, 'Agendamento cancelado') }}
+            onCancel={(a) => setAsk({
+              title: 'Cancelar horário?',
+              text: `${a.client_name} · ${a.service_name}, ${dayLabel(zoned(new Date(a.starts_at), tz).key)} às ${timeLabel(a.starts_at, tz)}. O horário volta a ficar livre no site.`,
+              yes: 'Cancelar horário', no: 'Manter',
+              onYes: () => run('panel_set_status', { p_id: a.id, p_status: 'cancelled' }, 'Agendamento cancelado'),
+            })}
             onRegister={(patch) => setReg(newReg(activeBarbers, services, today, patch))}
           />
         )}
         {tab === 'folgas' && <Blocks tz={tz} today={today} barbers={activeBarbers} allBarbers={barbers} blocks={blocks} run={run} />}
-        {tab === 'servicos' && <Settings shop={shop} token={token} barbers={barbers} services={services} run={run} />}
+        {tab === 'servicos' && <Settings shop={shop} token={token} barbers={barbers} services={services} run={run} setAsk={setAsk} />}
         {tab === 'relatorio' && (
           <Report shop={shop} tz={tz} today={today} barbers={activeBarbers} appointments={appointments}
             monthKey={selMonth} curMonth={curMonth} setMonthKey={setMonthKey} />
@@ -130,6 +136,8 @@ export default function Panel({ token }: { token: string }) {
         />
       )}
 
+      {ask && <ConfirmCard ask={ask} onClose={() => setAsk(null)} />}
+
       {toast && <div className="p-toast">{toast}</div>}
 
       {isMobile && (
@@ -142,6 +150,36 @@ export default function Panel({ token }: { token: string }) {
           </nav>
         </>
       )}
+    </div>
+  )
+}
+
+/* -------------------------- Confirmação -------------------------- */
+
+type Ask = { title: string; text: string; yes: string; no: string; onYes: () => Promise<unknown> | void }
+
+function ConfirmCard({ ask, onClose }: { ask: Ask; onClose: () => void }) {
+  const [busy, setBusy] = useState(false)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+  const yes = async () => {
+    setBusy(true)
+    await ask.onYes()
+    onClose()
+  }
+  return (
+    <div className="p-modal-bg" onClick={onClose}>
+      <div className="p-modal p-confirm" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+        <h2 id="confirm-title" className="p-h2" style={{ fontSize: 20 }}>{ask.title}</h2>
+        <p className="p-sub" style={{ fontSize: 14, lineHeight: 1.5 }}>{ask.text}</p>
+        <div className="p-confirm-actions">
+          <button className="p-btn-line p-btn-mid" onClick={onClose} autoFocus>{ask.no}</button>
+          <button className="p-btn-danger" disabled={busy} onClick={yes}>{busy ? 'Aguarde…' : ask.yes}</button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -428,8 +466,8 @@ function Blocks({ tz, today, barbers, allBarbers, blocks, run }: {
 
 /* --------------------------- Serviços --------------------------- */
 
-function Settings({ shop, token, barbers, services, run }: {
-  shop: Shop; token: string; barbers: Barber[]; services: Service[]
+function Settings({ shop, token, barbers, services, run, setAsk }: {
+  shop: Shop; token: string; barbers: Barber[]; services: Service[]; setAsk: (a: Ask) => void
   run: (fn: string, args: Record<string, unknown>, ok?: string) => Promise<boolean>
 }) {
   const [origin, setOrigin] = useState('')
@@ -444,7 +482,7 @@ function Settings({ shop, token, barbers, services, run }: {
 
       <section className="p-card">
         <div className="p-svc-row p-svc-head"><span>Serviço</span><span>Preço (R$)</span><span>Duração (min)</span><span /></div>
-        {services.map((s) => <ServiceRow key={s.id} s={s} run={run} />)}
+        {services.map((s) => <ServiceRow key={s.id} s={s} run={run} setAsk={setAsk} />)}
         <button className="p-add" onClick={() => run('panel_save_service', { p_id: null, p_name: 'Novo serviço', p_price_cents: 0, p_duration_min: 30, p_active: true })}>+ Adicionar serviço</button>
       </section>
 
@@ -482,7 +520,7 @@ function CopyLine({ label, value }: { label: string; value: string }) {
 const centsToInput = (c: number) => (c % 100 ? (c / 100).toFixed(2).replace('.', ',') : String(c / 100))
 const inputToCents = (v: string) => Math.round(Number(v.replace(/\./g, '').replace(',', '.') || 0) * 100)
 
-function ServiceRow({ s, run }: { s: Service; run: (fn: string, args: Record<string, unknown>, ok?: string) => Promise<boolean> }) {
+function ServiceRow({ s, run, setAsk }: { s: Service; run: (fn: string, args: Record<string, unknown>, ok?: string) => Promise<boolean>; setAsk: (a: Ask) => void }) {
   const [name, setName] = useState(s.name)
   const [price, setPrice] = useState(centsToInput(s.price_cents))
   const [dur, setDur] = useState(String(s.duration_min))
@@ -500,7 +538,12 @@ function ServiceRow({ s, run }: { s: Service; run: (fn: string, args: Record<str
       <input value={name} onChange={(e) => setName(e.target.value)} onBlur={() => save()} aria-label="Nome do serviço" />
       <input value={price} onChange={(e) => setPrice(e.target.value.replace(/[^\d,]/g, ''))} onBlur={() => save()} inputMode="decimal" aria-label="Preço" />
       <input value={dur} onChange={(e) => setDur(e.target.value.replace(/\D/g, ''))} onBlur={() => save()} inputMode="numeric" aria-label="Duração" />
-      <button className="p-x" aria-label="Remover serviço" title="Remover" onClick={() => { if (confirm(`Remover "${s.name}"?`)) run('panel_delete_service', { p_id: s.id }, 'Serviço removido') }}>×</button>
+      <button className="p-x" aria-label="Remover serviço" title="Remover" onClick={() => setAsk({
+        title: 'Remover serviço?',
+        text: `"${s.name}" sai do site. Os horários já marcados com ele continuam no painel.`,
+        yes: 'Remover', no: 'Manter',
+        onYes: () => run('panel_delete_service', { p_id: s.id }, 'Serviço removido'),
+      })}>×</button>
     </div>
   )
 }
