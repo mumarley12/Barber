@@ -64,8 +64,8 @@ def highpass(x, cutoff):
 
 def env(n, attack, release):
     e = np.ones(n)
-    a = max(1, int(attack * SR))
-    r = max(1, int(release * SR))
+    a = max(1, min(n // 2, int(attack * SR)))
+    r = max(1, min(n // 2, int(release * SR)))
     e[:a] = np.linspace(0, 1, a)
     e[-r:] *= np.linspace(1, 0, r)
     return e
@@ -77,12 +77,13 @@ STYLES = {
     'Reels':       (122, [('E', 'm7'), ('C', 'maj7'), ('G', 'maj7'), ('D', '6')], 'four',        True,    3200),
     'Clean':       (84,  [('D', 'maj7'), ('B', 'm7'), ('G', 'maj7'), ('A', '6')], 'soft',        True,    2400),
     'Noite':       (74,  [('F', 'maj7'), ('E', 'm7'), ('D', 'm7'), ('C', 'maj7')], 'soft',       True,    1400),
+    'Sessenta':    (112, [('A', 'm7'), ('F', 'maj7'), ('C', 'maj7'), ('G', '6')], 'four',        True,    2800),
     'AntesDepois': (104, [('C', 'm7'), ('G#', 'maj7'), ('D#', 'maj7'), ('A#', '6')], 'half',     False,   2600),
 }
 CHORD = {'m7': [0, 3, 7, 10], 'maj7': [0, 4, 7, 11], '6': [0, 4, 7, 9]}
 
 
-def music(style, seconds, seed=1):
+def music(style, seconds, seed=1, drums_from=0.0, build=False):
     rng = np.random.default_rng(seed)
     bpm, prog, kick_mode, arp, bright = STYLES[style]
     beat = 60 / bpm
@@ -162,6 +163,14 @@ def music(style, seconds, seed=1):
                 continue
             tt = np.arange(ln) / SR
             drums[ah:ah + ln] += highpass(rng.standard_normal(ln), 7000) * np.exp(-tt * 70) * (0.07 if h else 0.05)
+    if drums_from > 0:
+        # bateria entra depois do gancho
+        mask = np.clip((t_all - drums_from) / 0.3, 0, 1)
+        drums *= mask
+        ducker = 1 - (1 - ducker) * mask
+    if build:
+        # intensidade crescente até o final
+        drums *= 0.75 + 0.45 * (t_all / seconds)
     out = out * ducker + drums
     # fade de entrada e saída
     out *= env(n, 1.2, 2.5)
