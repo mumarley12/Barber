@@ -1,12 +1,11 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { AbsoluteFill, Easing, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame } from 'remotion'
+import { AbsoluteFill, Audio, Easing, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame } from 'remotion'
+import timings from './timings.json'
 import { C, clamp, Counter, F, FadeOut, Fonts, Icon, IconBadge, type IconName, Phone, Pop, Rise, sec, useSpringAt } from './kit'
 
 // Vídeo 3: claro e elegante, estilo apresentação de produto.
-const T = {
-  open: [0, 5.5], chat: [5.5, 13], phones: [13, 25], notify: [25, 33.5], desktop: [33.5, 44], features: [44, 50.5], price: [50.5, 57],
-} as const
-export const CLEAN_FRAMES = sec(T.price[1])
+const T = timings.Clean.scenes as Record<'open' | 'chat' | 'phones' | 'notify' | 'desktop' | 'features' | 'final', [number, number]>
+export const CLEAN_FRAMES = sec(timings.Clean.total)
 
 const INK = C.dark
 const SUB = '#77736B'
@@ -199,33 +198,40 @@ const featureList: [IconName, string][] = [
   ['wallet', 'Pagamento na barbearia, sem taxa'], ['chart', 'Relatório de atendidos e faltas'], ['link', 'Link pronto pra bio do Instagram'],
 ]
 
-const Features = () => (
-  <AbsoluteFill style={{ padding: '170px 90px 0' }}>
-    <Rise><Serif size={96}>Tudo que você<br />precisa. <span style={{ color: GOLD_DK }}>Nada a mais.</span></Serif></Rise>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 48, marginTop: 90 }}>
-      {featureList.map(([icon, t], i) => (
-        <Rise key={t} delay={10 + i * 6} distance={40}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 30 }}>
-            <IconBadge name={icon} size={100} bg={i % 2 ? INK : C.gold} fg={i % 2 ? C.gold : INK} />
-            <Body size={46} color={INK} style={{ fontWeight: 700 }}>{t}</Body>
-          </div>
-        </Rise>
-      ))}
-    </div>
-  </AbsoluteFill>
-)
+const Features = () => {
+  const frame = useCurrentFrame()
+  const len = sec(T.features[1] - T.features[0])
+  const active = Math.floor(interpolate(frame, [sec(3.2), len - sec(0.8)], [0, 6], clamp))
+  return (
+    <AbsoluteFill style={{ padding: '170px 90px 0' }}>
+      <Rise><Serif size={96}>Tudo que você<br />precisa. <span style={{ color: GOLD_DK }}>Nada a mais.</span></Serif></Rise>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 48, marginTop: 90 }}>
+        {featureList.map(([icon, t], i) => {
+          const on = i === active
+          return (
+            <Rise key={t} delay={10 + i * 6} distance={40}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 30, transform: `translateX(${on ? 24 : 0}px)`, opacity: active >= 0 && !on && frame > sec(3.2) ? 0.45 : 1 }}>
+                <IconBadge name={icon} size={100} bg={on ? INK : C.gold} fg={on ? C.gold : INK} />
+                <Body size={46} color={INK} style={{ fontWeight: on ? 800 : 700 }}>{t}</Body>
+              </div>
+            </Rise>
+          )
+        })}
+      </div>
+    </AbsoluteFill>
+  )
+}
 
-const Price = () => {
+const Final = () => {
   const frame = useCurrentFrame()
   const pulse = 1 + Math.sin(frame / 6) * 0.03
   return (
     <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', padding: '0 80px' }}>
       <Pop delay={0}>
         <div style={{ width: 900, background: INK, borderRadius: 56, padding: '70px 60px', textAlign: 'center', boxShadow: '0 60px 120px -40px rgba(0,0,0,0.55)' }}>
-          <Body size={34} color={C.gold} style={{ fontWeight: 800, letterSpacing: '0.16em' }}>INVESTIMENTO</Body>
-          <div style={{ ...F.serif, fontSize: 200, color: '#fff', marginTop: 10 }}>R$ <Counter to={1497} delay={6} dur={1} /></div>
-          <Body size={44} color="#fff" style={{ fontWeight: 700 }}>Pagamento único. Sem mensalidade.</Body>
-          <Body size={34} color="#B9B4A9" style={{ marginTop: 10 }}>Pronto em 7 dias, com o nome da sua barbearia.</Body>
+          <div style={{ display: 'flex', justifyContent: 'center' }}><IconBadge name="rocket" size={130} /></div>
+          <div style={{ ...F.serif, fontSize: 110, color: '#fff', marginTop: 30 }}>Seu site pronto<br />em <span style={{ color: C.gold }}>7 dias</span></div>
+          <Body size={40} color="#B9B4A9" style={{ marginTop: 20 }}>Com o nome da sua barbearia. Sem mensalidade.</Body>
           <div style={{ marginTop: 50, display: 'inline-flex', alignItems: 'center', gap: 20, background: C.gold, borderRadius: 999, padding: '30px 54px', transform: `scale(${pulse})` }}>
             <Icon name="whatsapp" size={56} color={INK} />
             <span style={{ ...F.manrope, fontWeight: 800, fontSize: 52, color: INK }}>Quero meu site</span>
@@ -238,13 +244,14 @@ const Price = () => {
 }
 
 const scenes: [readonly [number, number], () => ReactNode][] = [
-  [T.open, Open], [T.chat, Chat], [T.phones, Phones], [T.notify, Notify], [T.desktop, Desktop], [T.features, Features], [T.price, Price],
+  [T.open, Open], [T.chat, Chat], [T.phones, Phones], [T.notify, Notify], [T.desktop, Desktop], [T.features, Features], [T.final, Final],
 ]
 
 export const Clean = () => (
   <AbsoluteFill>
     <Fonts />
     <Paper />
+    <Audio src={staticFile('audio/Clean.wav')} />
     {scenes.map(([[a, b], Scene], i) => (
       <Sequence key={i} from={sec(a)} durationInFrames={sec(b) - sec(a)}>
         <FadeOut at={sec(b) - sec(a)} frames={10}><Scene /></FadeOut>

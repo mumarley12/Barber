@@ -1,8 +1,9 @@
 import type { CSSProperties, ReactNode } from 'react'
 import {
-  AbsoluteFill, Easing, interpolate, OffthreadVideo, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig,
+  AbsoluteFill, Audio, Easing, interpolate, OffthreadVideo, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion'
 import { Icon, type IconName, Wipe } from './kit'
+import timings from './timings.json'
 
 const FPS = 30
 const s = (sec: number) => Math.round(sec * FPS)
@@ -13,17 +14,8 @@ const CREAM = '#F3EFE7'
 const MUTED = '#A8A196'
 
 // Linha do tempo (em segundos), alinhada com o roteiro em ../roteiro.md
-const T = {
-  hook: [0, 5.5],
-  pain: [5.5, 11.5],
-  brand: [11.5, 14.5],
-  site: [14.5, 24.5],
-  booking: [24.5, 44],
-  panel: [44, 62.5],
-  offer: [62.5, 71],
-  cta: [71, 78],
-} as const
-export const PROMO_FRAMES = s(T.cta[1])
+const T = timings.Promo.scenes as Record<'hook' | 'pain' | 'brand' | 'site' | 'booking' | 'panel' | 'offer' | 'cta', [number, number]>
+export const PROMO_FRAMES = s(timings.Promo.total)
 
 const fontFaces = `
 @font-face{font-family:'Archivo';font-weight:800;src:url(${staticFile('fonts/Archivo-800.woff2')}) format('woff2')}
@@ -244,18 +236,26 @@ const Panel = () => (
 
 const Offer = () => {
   const frame = useCurrentFrame()
-  const value = Math.round(interpolate(frame, [s(0.4), s(1.8)], [0, 1497], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic) }))
   const p = useSpring(0)
+  const ring = interpolate(frame, [s(0.3), s(1.6)], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic) })
   return (
-    <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', gap: 30, padding: '0 70px' }}>
-      <Rise><div style={{ ...body, fontSize: 40, fontWeight: 800, letterSpacing: '0.14em', color: GOLD }}>INVESTIMENTO</div></Rise>
-      <div style={{ ...display, fontSize: 190, transform: `scale(${0.8 + p * 0.2})` }}>R$ {value.toLocaleString('pt-BR')}</div>
-      <Rise delay={s(1.6)}><div style={{ ...display, fontSize: 64, textAlign: 'center' }}>pagamento <Gold>único</Gold></div></Rise>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 22, marginTop: 40, alignItems: 'center' }}>
-        {['Sem mensalidade', 'Pronto em 7 dias', 'Com o nome e as fotos da sua barbearia'].map((t, i) => (
-          <Rise key={t} delay={s(2.4) + i * 12} distance={40}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20, ...body, fontSize: 42, fontWeight: 700 }}>
-              <span style={{ width: 54, height: 54, borderRadius: 999, background: GOLD, color: INK, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, fontWeight: 800 }}>✓</span>
+    <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', gap: 34, padding: '0 70px' }}>
+      <div style={{ position: 'relative', width: 260, height: 260, transform: `scale(${0.7 + p * 0.3})`, opacity: p }}>
+        <svg width="260" height="260" viewBox="0 0 100 100" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
+          <circle cx="50" cy="50" r="44" stroke="rgba(255,255,255,0.12)" strokeWidth="6" fill="none" />
+          <circle cx="50" cy="50" r="44" stroke={GOLD} strokeWidth="6" fill="none" strokeLinecap="round" pathLength={1} strokeDasharray="1" strokeDashoffset={1 - ring} />
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ ...display, fontSize: 120, color: GOLD }}>{Math.max(1, Math.round(ring * 7))}</div>
+          <div style={{ ...body, fontSize: 30, fontWeight: 800, color: MUTED, marginTop: -6 }}>DIAS</div>
+        </div>
+      </div>
+      <Rise delay={s(0.8)}><div style={{ ...display, fontSize: 84, textAlign: 'center' }}>Seu site <Gold>pronto</Gold><br />em 7 dias</div></Rise>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 22, marginTop: 30, alignItems: 'center' }}>
+        {['Sem mensalidade', 'Com o nome da sua barbearia', 'Com as fotos dos seus cortes'].map((t, i) => (
+          <Rise key={t} delay={s(1.8) + i * 12} distance={40}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, ...body, fontSize: 44, fontWeight: 700 }}>
+              <span style={{ width: 58, height: 58, borderRadius: 999, background: GOLD, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="check" size={36} color={INK} stroke={3} /></span>
               {t}
             </div>
           </Rise>
@@ -294,6 +294,7 @@ const scenes: [readonly [number, number], () => ReactNode][] = [
 export const Promo = () => (
   <AbsoluteFill style={{ background: INK }}>
     <style>{fontFaces}</style>
+    <Audio src={staticFile('audio/Promo.wav')} />
     <Background />
     {scenes.map(([[a, b], Scene], i) => (
       <Sequence key={i} from={s(a)} durationInFrames={s(b) - s(a)}>

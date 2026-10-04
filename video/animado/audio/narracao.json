@@ -1,0 +1,47 @@
+{
+  "Promo": [
+    { "scene": "hook", "min": 5.5, "text": "Tem horário hoje? Ainda tem vaga? Consegue me encaixar agora?" },
+    { "scene": "pain", "min": 6, "text": "Você para o corte pra responder mensagem. E mensagem sem resposta é cadeira vazia." },
+    { "scene": "brand", "min": 3, "text": "Agenda por Barbeiro. O site de agendamento da sua barbearia." },
+    { "scene": "site", "min": 10, "text": "Um site com o nome da sua barbearia, com seus barbeiros, seus cortes e seus serviços." },
+    { "scene": "booking", "min": 19.5, "text": "O cliente agenda sozinho, em três toques. Escolhe o barbeiro, escolhe o serviço e pega o horário livre. Coloca o nome e o WhatsApp, e pronto: horário reservado!" },
+    { "scene": "panel", "min": 18.5, "text": "E você acompanha tudo no seu painel: a agenda de cada barbeiro, atendimento concluído com um toque, lembrete no WhatsApp e o relatório do mês." },
+    { "scene": "offer", "min": 6, "text": "Seu site pronto em sete dias, sem mensalidade, com o nome e as fotos da sua barbearia." },
+    { "scene": "cta", "min": 6, "text": "Quer o seu? Chama no WhatsApp e manda: quero meu site." }
+  ],
+  "Reels": [
+    { "scene": "hook", "min": 2.6, "text": "Seu celular..." },
+    { "scene": "notAgenda", "min": 2.4, "text": "não é agenda!" },
+    { "scene": "reveal", "min": 3, "text": "Apresento: Agenda por Barbeiro!" },
+    { "scene": "split", "min": 11, "text": "O cliente marca. Você vê na hora. Sem responder ninguém." },
+    { "scene": "grid", "min": 7.5, "text": "Tudo isso: agenda aberta vinte e quatro horas, cada barbeiro com sua agenda, lembrete no WhatsApp, pagamento na barbearia, relatório do mês e link na bio do Instagram." },
+    { "scene": "stats", "min": 6.5, "text": "Zero mensagens pra responder. Vinte e quatro horas de agenda aberta. Um link na bio, e a agenda enche sozinha." },
+    { "scene": "offer", "min": 5, "text": "Seu site pronto em sete dias. Sem mensalidade." },
+    { "scene": "cta", "min": 5.5, "text": "Quer o seu? Chama no WhatsApp e manda: quero meu site!" }
+  ],
+  "Clean": [
+    { "scene": "open", "min": 5.5, "text": "Sua barbearia merece uma agenda de verdade." },
+    { "scene": "chat", "min": 7.5, "text": "Chega de agenda no WhatsApp." },
+    { "scene": "phones", "min": 12, "text": "O cliente escolhe barbeiro, serviço e horário. Sozinho, em qualquer hora do dia." },
+    { "scene": "notify", "min": 8.5, "text": "E aparece no seu painel na hora. Pago no balcão, marcado com um toque." },
+    { "scene": "desktop", "min": 10.5, "text": "Controle de tudo, do celular ou do computador." },
+    { "scene": "features", "min": 6.5, "text": "Tudo que você precisa. Nada a mais. Agenda por barbeiro, agendamento vinte e quatro horas, lembrete no WhatsApp, pagamento na barbearia, relatórios e link pra bio do Instagram." },
+    { "scene": "final", "min": 6.5, "text": "Seu site pronto em sete dias, com o nome da sua barbearia. Chama no WhatsApp: quero meu site." }
+  ],
+  "Noite": [
+    { "scene": "day", "min": 5, "text": "Sua barbearia fecha às oito da noite." },
+    { "scene": "night", "min": 5, "text": "Mas a sua agenda continua aberta." },
+    { "scene": "sleep", "min": 8, "text": "Enquanto você dorme, os clientes marcam sozinhos." },
+    { "scene": "morning", "min": 10, "text": "De manhã, está tudo no seu painel, com a agenda de cada barbeiro." },
+    { "scene": "orbit", "min": 8, "text": "Lembrete no WhatsApp, relatório do mês e link na bio do Instagram. Tudo num lugar só." },
+    { "scene": "cta", "min": 6, "text": "Sua agenda aberta vinte e quatro horas. Chama no WhatsApp e manda: quero meu site." }
+  ],
+  "AntesDepois": [
+    { "scene": "intro", "min": 4, "text": "Antes, e depois da Agenda por Barbeiro." },
+    { "scene": "pair1", "min": 9, "text": "Antes: respondendo mensagem no meio do corte. Depois: o cliente agenda sozinho." },
+    { "scene": "pair2", "min": 9, "text": "Antes: anotação no caderno e horário duplicado. Depois: cada barbeiro com a sua agenda." },
+    { "scene": "pair3", "min": 9, "text": "Antes: cliente que esquece e não aparece. Depois: lembrete no WhatsApp e tudo no painel." },
+    { "scene": "score", "min": 5, "text": "Placar final: três a zero pra Agenda por Barbeiro." },
+    { "scene": "cta", "min": 6, "text": "Faz o depois na sua barbearia. Chama no WhatsApp: quero meu site." }
+  ]
+}

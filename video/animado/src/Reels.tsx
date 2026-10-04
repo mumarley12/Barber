@@ -1,12 +1,11 @@
 import type { ReactNode } from 'react'
-import { AbsoluteFill, Easing, interpolate, Sequence, useCurrentFrame } from 'remotion'
+import { AbsoluteFill, Audio, Easing, interpolate, Sequence, staticFile, useCurrentFrame } from 'remotion'
+import timings from './timings.json'
 import { C, clamp, Counter, F, FadeOut, Fonts, Icon, IconBadge, type IconName, Phone, Pop, Rise, sec, Slam, Wipe } from './kit'
 
 // Vídeo 2: ritmo de Reels, textos que batem na tela, cores alternando.
-const T = {
-  hook: [0, 2.6], notAgenda: [2.6, 5], reveal: [5, 8], split: [8, 19], grid: [19, 26.5], stats: [26.5, 33], offer: [33, 38.5], cta: [38.5, 44],
-} as const
-export const REELS_FRAMES = sec(T.cta[1])
+const T = timings.Reels.scenes as Record<'hook' | 'notAgenda' | 'reveal' | 'split' | 'grid' | 'stats' | 'offer' | 'cta', [number, number]>
+export const REELS_FRAMES = sec(timings.Reels.total)
 
 const Big = ({ children, size = 190, color = C.cream }: { children: ReactNode; size?: number; color?: string }) => (
   <div style={{ ...F.anton, fontSize: size, color, textAlign: 'center' }}>{children}</div>
@@ -90,21 +89,33 @@ const features: [IconName, string][] = [
   ['wallet', 'Paga na barbearia'], ['chart', 'Relatório do mês'], ['instagram', 'Link na bio do Insta'],
 ]
 
-const Grid = () => (
-  <AbsoluteFill style={{ background: C.cream, alignItems: 'center', paddingTop: 170 }}>
-    <Slam delay={0} from={1.8}><div style={{ ...F.anton, fontSize: 130, color: C.ink }}>TUDO <span style={{ color: '#B88A00' }}>ISSO:</span></div></Slam>
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 34, marginTop: 70, padding: '0 70px', width: '100%' }}>
-      {features.map(([icon, label], i) => (
-        <Pop key={label} delay={10 + i * 7}>
-          <div style={{ background: '#fff', borderRadius: 36, padding: '40px 30px', height: 330, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 30px 60px -30px rgba(40,30,0,0.35)' }}>
-            <IconBadge name={icon} size={110} bg={i % 2 ? C.ink : C.gold} fg={i % 2 ? C.gold : C.ink} />
-            <div style={{ ...F.albert, fontWeight: 800, fontSize: 46, color: C.ink, lineHeight: 1.1 }}>{label}</div>
-          </div>
-        </Pop>
-      ))}
-    </div>
-  </AbsoluteFill>
-)
+const Grid = () => {
+  const frame = useCurrentFrame()
+  const len = sec(T.grid[1] - T.grid[0])
+  // a fala percorre os 6 itens depois de "Tudo isso:"
+  const active = Math.floor(interpolate(frame, [sec(1.6), len - sec(0.8)], [0, 6], clamp))
+  return (
+    <AbsoluteFill style={{ background: C.cream, alignItems: 'center', paddingTop: 170 }}>
+      <Slam delay={0} from={1.8}><div style={{ ...F.anton, fontSize: 130, color: C.ink }}>TUDO <span style={{ color: '#B88A00' }}>ISSO:</span></div></Slam>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 34, marginTop: 70, padding: '0 70px', width: '100%' }}>
+        {features.map(([icon, label], i) => {
+          const on = i === active
+          return (
+            <Pop key={label} delay={10 + i * 7}>
+              <div style={{
+                background: on ? C.ink : '#fff', borderRadius: 36, padding: '40px 30px', height: 330, display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                boxShadow: on ? '0 40px 80px -30px rgba(0,0,0,0.6)' : '0 30px 60px -30px rgba(40,30,0,0.35)', transform: `scale(${on ? 1.06 : 1})`, transition: 'none',
+              }}>
+                <IconBadge name={icon} size={110} bg={C.gold} fg={C.ink} />
+                <div style={{ ...F.albert, fontWeight: 800, fontSize: 46, color: on ? C.cream : C.ink, lineHeight: 1.1 }}>{label}</div>
+              </div>
+            </Pop>
+          )
+        })}
+      </div>
+    </AbsoluteFill>
+  )
+}
 
 const Stat = ({ value, label, bg, fg, sub }: { value: ReactNode; label: string; bg: string; fg: string; sub: string }) => (
   <AbsoluteFill style={{ background: bg, justifyContent: 'center', alignItems: 'center', gap: 20 }}>
@@ -114,13 +125,16 @@ const Stat = ({ value, label, bg, fg, sub }: { value: ReactNode; label: string; 
   </AbsoluteFill>
 )
 
-const Stats = () => (
-  <>
-    <Sequence durationInFrames={sec(2.2)}><Stat value={<Counter to={0} />} label="mensagens" sub="pra você responder" bg={C.ink} fg={C.gold} /></Sequence>
-    <Sequence from={sec(2.2)} durationInFrames={sec(2.2)}><Stat value={<><Counter to={24} dur={0.8} />H</>} label="agenda aberta" sub="até de madrugada" bg={C.gold} fg={C.ink} /></Sequence>
-    <Sequence from={sec(4.4)}><Stat value="1" label="link na bio" sub="e a agenda enche sozinha" bg={C.ink} fg={C.cream} /></Sequence>
-  </>
-)
+const Stats = () => {
+  const third = Math.round(sec(T.stats[1] - T.stats[0]) / 3)
+  return (
+    <>
+      <Sequence durationInFrames={third}><Stat value={<Counter to={0} />} label="mensagens" sub="pra você responder" bg={C.ink} fg={C.gold} /></Sequence>
+      <Sequence from={third} durationInFrames={third}><Stat value={<><Counter to={24} dur={0.8} />H</>} label="agenda aberta" sub="até de madrugada" bg={C.gold} fg={C.ink} /></Sequence>
+      <Sequence from={third * 2}><Stat value="1" label="link na bio" sub="e a agenda enche sozinha" bg={C.ink} fg={C.cream} /></Sequence>
+    </>
+  )
+}
 
 const Ticker = ({ text, y, dir = 1, bg, fg }: { text: string; y: number; dir?: number; bg: string; fg: string }) => {
   const frame = useCurrentFrame()
@@ -135,10 +149,10 @@ const Ticker = ({ text, y, dir = 1, bg, fg }: { text: string; y: number; dir?: n
 const Offer = () => (
   <AbsoluteFill style={{ background: C.ink, justifyContent: 'center', alignItems: 'center' }}>
     <Ticker text="SEM MENSALIDADE" y={260} bg={C.gold} fg={C.ink} />
-    <Ticker text="PRONTO EM 7 DIAS" y={1560} dir={-1} bg={C.cream} fg={C.ink} />
-    <Rise delay={0}><div style={{ ...F.albert, fontWeight: 800, fontSize: 50, color: C.muted, letterSpacing: '0.18em', textAlign: 'center' }}>PAGAMENTO ÚNICO</div></Rise>
-    <Slam delay={6} from={1.7}><div style={{ ...F.anton, fontSize: 250, color: C.gold }}>R$ <Counter to={1497} delay={6} dur={1} /></div></Slam>
-    <Rise delay={22}><div style={{ ...F.anton, fontSize: 90, color: C.cream }}>UMA VEZ. E PRONTO.</div></Rise>
+    <Ticker text="COM O NOME DA SUA BARBEARIA" y={1560} dir={-1} bg={C.cream} fg={C.ink} />
+    <Rise delay={0}><div style={{ ...F.albert, fontWeight: 800, fontSize: 50, color: C.muted, letterSpacing: '0.18em', textAlign: 'center' }}>SEU SITE PRONTO EM</div></Rise>
+    <Slam delay={6} from={1.7}><div style={{ ...F.anton, fontSize: 330, color: C.gold }}><Counter to={7} delay={6} dur={0.8} /> DIAS</div></Slam>
+    <Rise delay={22}><div style={{ ...F.anton, fontSize: 90, color: C.cream }}>SEM MENSALIDADE.</div></Rise>
   </AbsoluteFill>
 )
 
@@ -171,6 +185,7 @@ const scenes: [readonly [number, number], () => ReactNode][] = [
 export const Reels = () => (
   <AbsoluteFill style={{ background: C.ink }}>
     <Fonts />
+    <Audio src={staticFile('audio/Reels.wav')} />
     {scenes.map(([[a, b], Scene], i) => (
       <Sequence key={i} from={sec(a)} durationInFrames={sec(b) - sec(a)}>
         <FadeOut at={sec(b) - sec(a)} frames={4}><Scene /></FadeOut>
