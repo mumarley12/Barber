@@ -28,6 +28,7 @@ img{display:block}
 .s-btn{background:#E9B824;color:#121110;border:0;border-radius:999px;padding:15px 24px;font:800 15px 'Albert Sans',sans-serif;cursor:pointer;transition:background .2s ease,transform .2s ease}
 .s-btn:hover:not(:disabled){background:#F5CF55;transform:translateY(-1px)}
 .s-btn-lg{padding:17px 30px;font-size:16px}
+.site a.s-btn,.site a.s-btn:hover{display:block;color:#121110;text-align:center}
 .s-btn-outline{background:transparent;color:#E9B824;border:1px solid #E9B824;border-radius:999px;padding:10px 16px;font:700 14px 'Albert Sans',sans-serif;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
 .s-btn-outline:hover{background:#E9B824;color:#121110}
 .site .s-btn-ghost{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.2);color:#F3EFE7;border-radius:999px;padding:16px 26px;font-weight:700;font-size:16px}

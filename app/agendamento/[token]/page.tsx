@@ -59,7 +59,8 @@ export default function BookingPage({ params }: PageProps<'/agendamento/[token]'
         {b.status === 'pending' && (canCancel
           ? <button className="s-btn-outline" style={{ padding: 14 }} disabled={busy} onClick={cancel}>{busy ? 'Cancelando…' : 'Cancelar agendamento'}</button>
           : <p className="s-muted">Faltam menos de {b.cancel_hours} horas. Pra cancelar, fale com a barbearia.</p>)}
-        <a className="s-btn" style={{ textAlign: 'center' }} href={`/${b.shop_slug}`}>{b.status === 'cancelled' ? 'Marcar outro horário' : 'Remarcar: escolher outro horário'}</a>
+        {b.status === 'pending' && canCancel && <p className="s-muted">Pra remarcar: cancele este horário e escolha outro.</p>}
+        <a className="s-btn" href={`/${b.shop_slug}`}>{b.status === 'pending' ? 'Escolher outro horário' : 'Marcar novo horário'}</a>
         {wa && <a href={wa} target="_blank" rel="noopener" style={{ textAlign: 'center', fontWeight: 700 }}>Falar com a barbearia no WhatsApp</a>}
       </div>
     </div>
