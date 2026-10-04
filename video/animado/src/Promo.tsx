@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from 'react'
 import {
   AbsoluteFill, Easing, interpolate, OffthreadVideo, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion'
+import { Icon, type IconName, Wipe } from './kit'
 
 const FPS = 30
 const s = (sec: number) => Math.round(sec * FPS)
@@ -96,7 +97,7 @@ const Headline = ({ children, top = 150, size = 76, delay = 0 }: { children: Rea
 const Gold = ({ children }: { children: ReactNode }) => <span style={{ color: GOLD }}>{children}</span>
 
 // Etiqueta que troca de acordo com o momento do clipe
-const StepTag = ({ steps }: { steps: { at: number; text: string; n?: string }[] }) => {
+const StepTag = ({ steps }: { steps: { at: number; text: string; n?: string; icon?: IconName }[] }) => {
   const frame = useCurrentFrame()
   const i = steps.reduce((acc, st, k) => (frame >= s(st.at) ? k : acc), -1)
   if (i < 0) return null
@@ -109,6 +110,7 @@ const StepTag = ({ steps }: { steps: { at: number; text: string; n?: string }[] 
         display: 'flex', alignItems: 'center', gap: 18, background: GOLD, color: INK, borderRadius: 999, padding: '20px 38px',
         transform: `scale(${0.7 + p * 0.3})`, opacity: p, boxShadow: '0 20px 50px -15px rgba(233,184,36,0.6)',
       }}>
+        {st.icon && !st.n && <Icon name={st.icon} size={46} color={INK} stroke={2.4} />}
         {st.n && <span style={{ ...display, color: GOLD, fontSize: 40, background: INK, borderRadius: 999, width: 64, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{st.n}</span>}
         <span style={{ ...body, color: INK, fontWeight: 800, fontSize: 42 }}>{st.text}</span>
       </div>
@@ -215,8 +217,8 @@ const Booking = () => {
         { at: 0.5, n: '1', text: 'Escolhe o barbeiro' },
         { at: 2.0, n: '2', text: 'Escolhe o serviço' },
         { at: 3.5, n: '3', text: 'Pega o horário livre' },
-        { at: 6.5, text: 'Nome e WhatsApp' },
-        { at: 13.5, text: '✓ Horário reservado!' },
+        { at: 6.5, text: 'Nome e WhatsApp', icon: 'whatsapp' },
+        { at: 13.5, text: 'Horário reservado!', icon: 'check' },
       ]} />
     </AbsoluteFill>
   )
@@ -232,10 +234,10 @@ const Panel = () => (
       <Phone src="clips/03-painel-celular.mp4" trimBefore={15.5} top={420} />
     </Sequence>
     <StepTag steps={[
-      { at: 0.6, text: 'A agenda de cada barbeiro' },
-      { at: 6.5, text: 'Concluído com 1 toque' },
-      { at: 9.5, text: 'Lembrete no WhatsApp' },
-      { at: 12.5, text: 'Relatório do mês' },
+      { at: 0.6, text: 'A agenda de cada barbeiro', icon: 'calendar' },
+      { at: 6.5, text: 'Concluído com 1 toque', icon: 'check' },
+      { at: 9.5, text: 'Lembrete no WhatsApp', icon: 'whatsapp' },
+      { at: 12.5, text: 'Relatório do mês', icon: 'chart' },
     ]} />
   </AbsoluteFill>
 )
@@ -300,5 +302,6 @@ export const Promo = () => (
         </FadeOut>
       </Sequence>
     ))}
+    {[T.brand[0], T.site[0], T.offer[0], T.cta[0]].map((t) => <Wipe key={t} at={s(t)} />)}
   </AbsoluteFill>
 )
