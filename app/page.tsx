@@ -3,6 +3,14 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Agenda por Barbeiro · Site de agendamento para barbearias',
   description: 'Um site com o nome da sua barbearia, onde o cliente escolhe o barbeiro, vê o horário livre e agenda sozinho. Pagamento único, sem mensalidade.',
+  openGraph: {
+    title: 'Agenda por Barbeiro',
+    description: 'Site de agendamento + painel para barbearias. O cliente agenda sozinho, 24 horas por dia.',
+    type: 'website',
+    locale: 'pt_BR',
+    url: '/',
+    images: [{ url: '/og/agenda-por-barbeiro.jpg', width: 1200, height: 630, alt: 'Agenda por Barbeiro' }],
+  },
 }
 
 // Seu WhatsApp de vendas (só dígitos, com 55). Defina NEXT_PUBLIC_SALES_WHATSAPP na Vercel.

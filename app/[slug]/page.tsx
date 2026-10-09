@@ -20,9 +20,12 @@ export async function generateMetadata({ params }: PageProps<'/[slug]'>): Promis
   const { slug } = await params
   const data = await load(slug)
   if (!data) return { title: 'Barbearia não encontrada' }
+  const title = `${data.shop.name} · Agende seu horário`
+  const description = `Escolha o barbeiro, pegue o horário e receba o lembrete no WhatsApp. ${data.shop.address || ''}`.trim()
   return {
-    title: `${data.shop.name} · Agende seu horário`,
-    description: `Escolha o barbeiro, pegue o horário e receba o lembrete no WhatsApp. ${data.shop.address || ''}`.trim(),
+    title,
+    description,
+    openGraph: { title, description, type: 'website', locale: 'pt_BR', siteName: data.shop.name, url: `/${slug}` },
     icons: data.shop.logo_url ? { icon: data.shop.logo_url } : undefined,
   }
 }

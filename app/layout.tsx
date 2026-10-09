@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
+  // Endereço público: as prévias de link (WhatsApp, Instagram) precisam de URLs absolutas.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://agenda-por-barbeiro.vercel.app'),
   title: 'Agenda por Barbeiro',
   description: 'Site de agendamento para barbearias: cada barbeiro com a própria agenda.',
 }
