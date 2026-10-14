@@ -48,3 +48,7 @@ npm run dev
 - `app/agendamento/[token]/`: página do cliente
 - `lib/`: cliente Supabase, tipos e cálculo de horários com fuso
 - `supabase/migrations/`: esquema do banco (já aplicado no projeto `barber`)
+
+## Banco ativo
+
+O Supabase gratuito pausa o projeto depois de uma semana sem uso. O workflow `.github/workflows/supabase-keepalive.yml` faz uma consulta a cada 3 dias para evitar isso (também dá para rodar à mão em Actions → Manter Supabase ativo → Run workflow).
